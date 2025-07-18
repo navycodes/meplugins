@@ -250,7 +250,7 @@ async def join_members(client, member):
                     )
             
     except Exception:
-        print(f"ERROR new_members: {traceback.format_exc()}")
+        pass
 
 
 
@@ -301,6 +301,8 @@ async def leave_members(client, member):
                     disable_web_page_preview=True,
                     parse_mode=enums.ParseMode.HTML,
                 )
+            except Exception:
+                pass
 
         else:
             kwargs = {
@@ -329,9 +331,11 @@ async def leave_members(client, member):
                         parse_mode=enums.ParseMode.HTML,
                         reply_markup=reply_markup
                     )
+                except Exception:
+                    pass
             
     except Exception:
-        print(f"ERROR leave_members: {traceback.format_exc()}")
+        pass
 
 
 __MODULE__ = "Greetings"
