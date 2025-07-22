@@ -69,7 +69,7 @@ async def setlang_cmd(_, message):
         for lang, code in Tools.kode_bahasa.items():
             kd = message.text.split(None, 1)[1]
             if kd.lower() == code.lower():
-                await dB.set_var(message.from_user, "_translate", kd.lower())
+                await dB.set_var(message.from_user.id, "_translate", kd.lower())
                 return await message.reply(f"**Successfully changed your translate language to: {lang}-{kd} and saved in database.**")
     except Exception:
         print(traceback.format_exc())
