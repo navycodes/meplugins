@@ -394,7 +394,7 @@ async def pin_callback(client, callback):
         disable_web_page_preview=True
     )
     return await callback.answer(
-        "Message Un-Pinned Successfully!", show_alert=True
+        "Message Pinned Successfully!", show_alert=True
     )
 
 
