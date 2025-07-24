@@ -305,7 +305,7 @@ async def pin_cmd(_, message):
         return await message.reply_text("><b>Please reply to a message to pin!</b>")
 
     cmd = message.command[0].lower()
-    args = message.text.split() if len(message.command) >= 2 else ""
+    args = message.text.split() if len(message.command) > 2 else ""
 
     LOUD_FLAGS = ["-loud", "--loud", "-louds", "--louds"]
     is_loud = bool(flag in args for flag in LOUD_FLAGS)
