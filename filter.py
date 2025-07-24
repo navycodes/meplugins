@@ -13,18 +13,21 @@ from utils.query_group import filter_group
 
 from config import BANNED_USERS
 
+
 @app.on_message(filters.command(["savefilter", "addfilter", "filter"]) & ~BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def filter_cmd(_, message):
-    xx = await message.reply(">**Please wait...**")
     rep = message.reply_to_message
     if len(message.command) < 2 or not rep:
-        return await xx.edit(f">**Please reply message and give filter name**")
+        return await message.reply("><b>Please reply message and give filter name ..</b>")
+    xx = await message.reply("><b>Please wait...</b>")
     nama = message.text.split()[1]
     getfilter = await dB.get_var(message.chat.id, nama, "FILTER")
     if getfilter:
-        return await xx.edit(f">**Filter {nama} already exist!**")
+        return await xx.edit(
+            f"><b>Filter <code>{nama}</cod>e> already exist!</b>"
+        )
     value = None
 
     text = rep.text or rep.caption or ""
@@ -39,31 +42,39 @@ async def filter_cmd(_, message):
         value = {"type": "text", "file_id": "", "result": text}
     if value:
         await dB.set_var(message.chat.id, nama, value, "FILTER")
-        return await xx.edit(f">**Saved {nama} filter!!**")
+        return await xx.edit(
+            f"><b>Successfully Save New Filter as <code>{nama}</code>.</b>"
+        )
     else:
-        return await xx.edit(f">**Please reply message and give filter name**")
+        return await xx.edit(
+            "><b>Please reply message and give filter name!</b>"
+        )
 
 @app.on_message(filters.command(["getfilter"]) & ~BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def getfilter_cmd(client, message):
-    xx = await message.reply(">**Please wait...**")
+    xx = await message.reply("><b>Please wait...</b>")
     try:
         if len(message.text.split()) == 3 and (message.text.split())[2] in [
             "noformat",
             "raw",
         ]:
-            filter = message.text.split()[1]
-            data = await dB.get_var(message.chat.id, filter, "FILTER")
+            filter_name = message.text.split()[1]
+            data = await dB.get_var(message.chat.id, filter_name, "FILTER")
             if not data:
-                return await xx.edit(f">**Filter {filter} not found!**")
+                return await xx.edit(
+                    f"><b>Filter <code>{filter_name}</code> not found!</b>"
+                )
             return await get_raw_filter(client, message, xx, data)
         else:
             return await xx.edit(
-                f">**Please valid command.\nExample: `{message.text.split()[0]} ciah noformat`.**"
+                f"><b>Command Invalid!</b>\n><b>Example:</b>\n\n> •<code>{message.text.split()[0]} ciah noformat</code>."
             )
     except Exception as e:
-        return await xx.edit(f">**ERROR**: {str(e)}")
+        return await xx.edit(
+            f"><b>ERROR</b>:\n\n<pre><code>{str(e)}</code></pre>"
+        )
 
 
 async def get_raw_filter(_, message, xx, data):
@@ -106,59 +117,68 @@ async def get_raw_filter(_, message, xx, data):
         return await message.reply(f">**ERROR**: {str(er)}")
     return await xx.delete()
 
+
 @app.on_message(filters.command(["filters", "allfilter"]) & ~BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def filters_cmd(_, message):
-    xx = await message.reply(">**Please wait...**")
+    xx = await message.reply("><b>Please wait...</b>")
     getfilter = await dB.all_var(message.chat.id, "FILTER")
     if not getfilter:
-        return await xx.edit(f">**Thits chat dont have any filter!**")
-    rply = f">**List of Filters:**\n\n"
+        return await xx.edit(
+            f"><b>This {message.chat.title or 'Chat'} dont have any filter!</b>"
+        )
+    rply = "><b>List of Filters:</b>\n\n"
     for x, data in getfilter.items():
         type = await dB.get_var(message.chat.id, x, "FILTER")
-        rply += f"**• Name: `{x}` | Type: `{type['type']}`**\n"
+        rply += f"<b>• Name: <code>{x}</code> | Type: <code>{type['type']}</code></b>\n"
     return await xx.edit(rply)
+
 
 @app.on_message(filters.command(["stopfilter", "clearfilter"]) & ~BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def stopfilter_cmd(client, message):
-    args = client.get_arg(message).split(",")
-    xx = await message.reply(">**Please wait...**")
-    if len(args) == 0 or (len(args) == 1 and args[0].strip() == ""):
-        return await xx.edit(f">**Which filter do you want to delete?**")
-    if message.command[1] == "all":
-        if not await dB.all_var(message.chat.id, "FILTER"):
-            return await xx.edit(f">**You dont have any filter!**")
-        for nama in await dB.all_var(message.chat.id, "FILTER"):
-            data = await dB.get_var(message.chat.id, nama, "FILTER")
-            await dB.remove_var(message.chat.id, nama, "FILTER")
-        return await xx.edit(f">**Succesfully deleted all filter!**")
-    else:
-        gagal_list = []
-        sukses_list = []
+    args_text = client.get_arg(message) or ""
+    args = args_text.split(",")
 
-        for arg in args:
-            arg = arg.strip()
-            if not arg:
-                continue
-            data = await dB.get_var(message.chat.id, arg, "FILTER")
-            if not data:
-                gagal_list.append(arg)
-            else:
-                await dB.remove_var(message.chat.id, arg, "FILTER")
-                sukses_list.append(arg)
+    xx = await message.reply("><b>Please wait...</b>")
 
-        if sukses_list:
-            return await xx.edit(
-                f">**Filter `{', '.join(sukses_list)}` successfully deleted.**"
-            )
+    if not args_text.strip():
+        return await xx.edit("><b>Which filter do you want to delete?</b>")
 
-        if gagal_list:
-            return await xx.edit(
-                f">**Filter `{', '.join(gagal_list)}` not found!**"
-            )
+    if len(message.command) > 1 and message.command[1].lower() == "all":
+        all_filters = await dB.all_var(message.chat.id, "FILTER")
+        if not all_filters:
+            return await xx.edit("><b>You don't have any filters!</b>")
+        for name in all_filters:
+            await dB.remove_var(message.chat.id, name, "FILTER")
+        return await xx.edit("><b>Successfully deleted all filters!</b>")
+
+    gagal_list = []
+    sukses_list = []
+
+    for arg in args:
+        arg = arg.strip()
+        if not arg:
+            continue
+        data = await dB.get_var(message.chat.id, arg, "FILTER")
+        if not data:
+            gagal_list.append(arg)
+        else:
+            await dB.remove_var(message.chat.id, arg, "FILTER")
+            sukses_list.append(arg)
+
+    if sukses_list:
+        return await xx.edit(
+            f"><b>Filter <code>{', '.join(sukses_list)}</code> successfully deleted.</b>"
+        )
+
+    if gagal_list:
+        return await xx.edit(
+            f"><b>Filter <code>{', '.join(gagal_list)}<code> not found!</code>"
+        )
+
 
 @app.on_message(filters.incoming & filters.group & ~filters.bot & ~filters.via_bot & ~BANNED_USERS, group=filter_group)
 async def FILTERS(_, message):
@@ -170,7 +190,6 @@ async def FILTERS(_, message):
         getfilter = await dB.all_var(message.chat.id, "FILTER")
         if not getfilter:
             return
-        #reply = message.from_user or message.sender_chat
         for word in getfilter:
             pattern = rf"\b{re.escape(word)}\b"
             if not re.search(pattern, text, flags=re.IGNORECASE):
@@ -224,10 +243,10 @@ __HELP__ = """
 
 📬 <b>Auto Reply Filters</b>
 
-• <b>/savefilter</b> (keyword) (reply message) – Save a filter.  
-• <b>/filters</b> – View all active filters.  
-• <b>/getfilter</b> (name) raw – Get raw content of a filter.  
-• <b>/stopfilter</b> (name) – Remove a specific filter.  
+• <b>/savefilter</b> (keyword) (reply message) – Save a filter.
+• <b>/filters</b> – View all active filters.
+• <b>/getfilter</b> (name) raw – Get raw content of a filter.
+• <b>/stopfilter</b> (name) – Remove a specific filter.
 • <b>/stopfilter all</b> – Delete all filters in this chat.
 
 <i>Supports markdown & custom response formatting.</i>
