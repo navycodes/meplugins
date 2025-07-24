@@ -62,8 +62,8 @@ async def promote_cmd(client, message):
                 f"><b>I don't have right permissions to promote {mention} in {message.chat.titile or 'this group'}!</b>"
             )
     else:
-        is_admin = (await client.get_chat_member(message.chat.id, user_id)).status
-        if is_admin != await enums.ChatMemberStatus.ADMINISTRATOR:
+        admin_ids = await client.admin_list(message)
+        if user_id not in admin_ids:
             return await pros.edit_text(
                 f"><b>Yes {mention} is still member!</b>"
             )
