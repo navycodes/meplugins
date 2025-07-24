@@ -42,9 +42,15 @@ async def promote_cmd(client, message):
             "><b>Please reply to a non-Anonymous user's message or provide your userID/userName..</b>"
         )
     try:
-        target = reply.from_user.id if reply else message.text.split()[1]
+        target, title = await client.extract_user_and_reason(message)
+        if not target:
+            return await message.reply(
+                "><b>You need to specify a user (either by reply or username/ID)!</b>"
+            )
     except (AttributeError, IndexError):
-        return await message.reply("><b>You need to specify a user (either by reply or username/ID)!</b>")
+        return await message.reply(
+            "><b>You need to specify a user (either by reply or username/ID)!</b>"
+        )
     try:
         user = await client.get_users(target)
     except (errors.PeerIdInvalid, KeyError, errors.UsernameInvalid, errors.UsernameNotOccupied, IndexError):
