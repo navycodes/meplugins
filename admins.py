@@ -31,13 +31,16 @@ __HELP__ = """
 </blockquote>
 """
 
+
 @app.on_message(filters.command(["promote", "fullpromote", "demote"]) & ~config.BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def promote_cmd(client, message):
     reply = message.reply_to_message
     if reply and reply.sender_chat:
-        return await message.reply(">**Please reply userID not anonymous account.**")
+        return await message.reply(
+            "><b>Please reply to a non-Anonymous user's message or provide your userID/userName..</b>"
+        )
     try:
         target = reply.from_user.id if reply else message.text.split()[1]
     except (AttributeError, IndexError):
@@ -46,21 +49,24 @@ async def promote_cmd(client, message):
         user = await client.get_users(target)
     except (errors.PeerIdInvalid, KeyError, errors.UsernameInvalid, errors.UsernameNotOccupied, IndexError):
         return await message.reply("><b>You need meet before interact!!</b>")
-    user.mention
     user_id = user.id
+    mention = await client.get_mention_from_user_id(client, user_id)
     if user_id == client.me.id:
-        return await message.reply_text(">**Please reply to message to member!**")
-    command = message.command[0]
+        return await message.reply_text("><b>How can I promote myself?</b>")
+    command = message.command[0].lower()
+    pros = await message.reply_text(f"><b>Process <code>{command}</b> {mention} ..</b>")
     if command != "demote":
         is_right = await client.get_chat_member(message.chat.id, client.me.id)
         if not is_right.privileges.can_promote_members:
-            return await message.reply_text(
-                f">**I don't have the right to promote members in this group!**"
+            return await pros.edit_text(
+                f"><b>I don't have right permissions to promote {mention} in {message.chat.titile or 'this group'}!</b>"
             )
     else:
         is_admin = (await client.get_chat_member(message.chat.id, user_id)).status
         if is_admin != await enums.ChatMemberStatus.ADMINISTRATOR:
-            return await message.reply_text(f">**Yes they are still member!**")
+            return await pros.edit_text(
+                f"><b>Yes {mention} is still member!</b>"
+            )
 
     try:
         if message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
@@ -69,9 +75,8 @@ async def promote_cmd(client, message):
             elif len(message.text.split()) >= 2 and message.reply_to_message:
                 title = " ".join(message.text.split()[1:16])
             else:
-                title = f"{user.first_name}"
+                title = f"{user.first_name} {user.last_name or ''}".split()[:16]
             if command in ["promote", "fullpromote"]:
-
                 privileges = types.ChatPrivileges(
                     can_manage_chat=True,
                     can_delete_messages=True,
@@ -103,7 +108,7 @@ async def promote_cmd(client, message):
                         privileges=privileges,
                         title="Anak Kambing",
                     )
-                return await message.reply_text(
+                return await pros.edit_text(
                     f"><b>Successfully promoted user {user.mention} to admin!</b>"
                 )
 
@@ -122,12 +127,15 @@ async def promote_cmd(client, message):
                         can_manage_video_chats=False,
                     ),
                 )
-                return await message.reply_text(
-                    f"><b>Successfully demoted user {user.mention} from admin!</b>"
+                return await pros.edit_text(
+                    f"><b>Successfully demoted user {mention} from admin!</b>"
                 )
     except Exception as er:
-        return await message.reply_text(f">**ERROR:** {str(er)}")
-    
+        return await pros.edit_text(
+            f"><b>ERROR:</b>\n\n<pre><code>{str(er)}</code></pre>"
+        )
+
+
 @app.on_message(filters.command(["staff"]) & ~config.BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
@@ -141,7 +149,7 @@ async def staff_cmd(client, message):
     co_founder = []
     admin = []
     bot = []
-    pros = await message.reply(">**Please wait...**")
+    pros = await message.reply("><b>Please wait...</b>")
     await asyncio.sleep(1)
     if uname:
         chat_link = f"<a href='t.me/{uname}'>{chat.title}</a>"
@@ -153,7 +161,7 @@ async def staff_cmd(client, message):
         status = dia.status
         title = dia.custom_title
         botol = user.is_bot
-        mention = f"<a href=tg://user?id={user.id}>{user.first_name or ''} {user.last_name or ''}</a>"
+        mention = await client.get_mention_from_user(user)
         if (
             status == enums.ChatMemberStatus.ADMINISTRATOR
             and ijin.can_promote_members
@@ -261,12 +269,13 @@ async def del_cmd(_, message):
     except Exception:
         return
 
+
 @app.on_message(filters.command(["pin", "unpin"]) & ~config.BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def pin_cmd(_, message):
     if not message.reply_to_message:
-        return await message.reply_text(f">**Please reply to message!**")
+        return await message.reply_text("><b>Please reply to message!</b>")
     r = message.reply_to_message
     if message.command[0][0] == "u":
         await r.unpin()
