@@ -93,7 +93,8 @@ async def promote_cmd(client, message):
                         can_delete_messages=True,
                         can_manage_video_chats=True,
                         can_restrict_members=True,
-                        can_invite_users=False,
+                        can_invite_users=True,
+                        can_pin_messages=True,
                     )
                 # privileges = types.ChatPrivileges(
                     # can_manage_chat=True,
@@ -127,7 +128,7 @@ async def promote_cmd(client, message):
                         title="Anak Kambing",
                     )
                 return await pros.edit_text(
-                    f"><b>Successfully {command} Admin on {message.chat.title or 'This Group Chat'}:</b>\n\n<blockquote expandable><b>User:</b> {user.mention}\n<b>Title:</b> <code>{title}</code>\n<b>Promoted by:</b> {await client.get_mention_from_user(message.from_user)}</blockquote>"
+                    f"><b>Successfully {command} Admin on {message.chat.title or 'This Group Chat'}:</b>\n\n<blockquote expandable><b>User:</b> {user.mention}\n<b>Title:</b> <code>{title}</code>\n<b>Promoted by:</b> {await client.get_mention_from_user(message.from_user)}</blockquote>\n\n><b>Use Command:</b>\n><b>/reload or /admincache for refresh admin list.</b>"
                 )
 
             else:
