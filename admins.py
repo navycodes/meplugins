@@ -308,8 +308,8 @@ async def pin_cmd(_, message):
     keyboard = types.InlineKeyboardMarkup(
         [
             [
-                types.InlineKeyboardButton("📌 Pin (Silent)", callback_data=f"pincb_silent_{r.id}"),
-                types.InlineKeyboardButton("📢 Pin (Loud)", callback_data=f"pincb_loud_{r.id}")
+                types.InlineKeyboardButton("🔕 Pin (Silent Mode)", callback_data=f"pincb_silent_{r.id}"),
+                types.InlineKeyboardButton("🔔 Pin (Loud Mode)", callback_data=f"pincb_loud_{r.id}")
             ],
             [
                 types.InlineKeyboardButton("🚮 Cancel", callback_data="pincb_cancel")
@@ -318,7 +318,7 @@ async def pin_cmd(_, message):
     )
 
     return await message.reply_text(
-        f">Choose how to pin [this]({r.link}) message:",
+        f"><b>Please Choose how to pin [This Message]({r.link}):</b>",
         reply_markup=keyboard,
         disable_web_page_preview=True,
     )
