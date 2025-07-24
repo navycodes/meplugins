@@ -26,7 +26,7 @@ async def filter_cmd(_, message):
     getfilter = await dB.get_var(message.chat.id, nama, "FILTER")
     if getfilter:
         return await xx.edit(
-            f"><b>Filter <code>{nama}</cod>e> already exist!</b>"
+            f"><b>Filter <code>{nama}</code> already exist!</b>"
         )
     value = None
 
