@@ -81,7 +81,7 @@ async def promote_cmd(client, message):
             elif len(message.text.split()) >= 2 and message.reply_to_message:
                 title = " ".join(message.text.split()[1:16])
             else:
-                title = f"{user.first_name} {user.last_name or ''}".split()[:16]
+                title = f"{user.first_name}"
             if command in ["promote", "fullpromote"]:
                 privileges = types.ChatPrivileges(
                     can_manage_chat=True,
