@@ -83,23 +83,35 @@ async def promote_cmd(client, message):
             else:
                 title = f"{user.first_name}"
             if command in ["promote", "fullpromote"]:
-                privileges = types.ChatPrivileges(
-                    can_manage_chat=True,
-                    can_delete_messages=True,
-                    can_manage_video_chats=True,
-                    can_restrict_members=True,
-                    can_promote_members=command == "fullpromote",
-                    can_change_info=command == "fullpromote",
-                    can_post_messages=command == "fullpromote",
-                    can_edit_messages=command == "fullpromote",
-                    can_manage_topics=command == "fullpromote",
-                    can_post_stories=command == "fullpromote",
-                    can_edit_stories=command == "fullpromote",
-                    can_delete_stories=command == "fullpromote",
-                    can_invite_users=True,
-                    can_pin_messages=True,
-                    is_anonymous=False,
-                )
+                if command == "fullpromote":
+                    privileges = await client.get_privileges(
+                        client, message.chat.id, client.me.id
+                    )
+                else:
+                    privileges = types.ChatPrivileges(
+                        can_manage_chat=True,
+                        can_delete_messages=True,
+                        can_manage_video_chats=True,
+                        can_restrict_members=True,
+                        can_invite_users=False,
+                    )
+                # privileges = types.ChatPrivileges(
+                    # can_manage_chat=True,
+                    # can_delete_messages=True,
+                    # can_manage_video_chats=True,
+                    # can_restrict_members=True,
+                    # can_promote_members=command == "fullpromote",
+                    # can_change_info=command == "fullpromote",
+                    # can_post_messages=command == "fullpromote",
+                    # can_edit_messages=command == "fullpromote",
+                    # can_manage_topics=command == "fullpromote",
+                    # can_post_stories=command == "fullpromote",
+                    # can_edit_stories=command == "fullpromote",
+                    # can_delete_stories=command == "fullpromote",
+                    # can_invite_users=True,
+                    # can_pin_messages=True,
+                    # is_anonymous=False,
+                # )
                 try:
                     await client.promote_chat_member(
                         chat_id=message.chat.id,
