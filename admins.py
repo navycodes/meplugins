@@ -65,7 +65,7 @@ async def promote_cmd(client, message):
         is_right = await client.get_chat_member(message.chat.id, client.me.id)
         if not is_right.privileges.can_promote_members:
             return await pros.edit_text(
-                f"><b>I don't have right permissions to promote {mention} in {message.chat.titile or 'this group'}!</b>"
+                f"><b>I don't have right permissions to promote {mention} in {message.chat.title or 'this group'}!</b>"
             )
     else:
         admin_ids = await client.admin_list(message)
@@ -76,12 +76,10 @@ async def promote_cmd(client, message):
 
     try:
         if message.chat.type in [enums.ChatType.SUPERGROUP, enums.ChatType.GROUP]:
-            if len(message.text.split()) >= 3 and not message.reply_to_message:
-                title = " ".join(message.text.split()[2:16])
-            elif len(message.text.split()) >= 2 and message.reply_to_message:
-                title = " ".join(message.text.split()[1:16])
-            else:
-                title = f"{user.first_name}"
+            if not title:
+                title = f"{user.first_name} {user.last_name or ''}"
+            if len(title) > 16:
+                title = title[:16]
             if command in ["promote", "fullpromote"]:
                 if command == "fullpromote":
                     privileges = await client.get_privileges(
