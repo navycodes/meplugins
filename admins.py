@@ -127,7 +127,7 @@ async def promote_cmd(client, message):
                         title="Anak Kambing",
                     )
                 return await pros.edit_text(
-                    f"><b>Successfully promoted user {user.mention} to admin!</b>"
+                    f"><b>Successfully promoted Admin on {message.chat.title or 'This Group Chat'}:</b>\n\n<blockquote expandable><b>User:</b> {user.mention}\n<b>Title:</b> <code>{title}</code>\n<b>Promoted by:</b> {await client.get_mention_from_user(message.from_user)}</blockquote>"
                 )
 
             else:
