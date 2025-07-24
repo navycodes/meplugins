@@ -112,24 +112,29 @@ async def promote_cmd(client, message):
                     f"><b>Successfully promoted user {user.mention} to admin!</b>"
                 )
 
-            else: 
-                await client.promote_chat_member(
-                    chat_id=message.chat.id,
-                    user_id=user_id,
-                    privileges=types.ChatPrivileges(
-                        can_change_info=False,
-                        can_invite_users=False,
-                        can_delete_messages=False,
-                        can_restrict_members=False,
-                        can_pin_messages=False,
-                        can_promote_members=False,
-                        can_manage_chat=False,
-                        can_manage_video_chats=False,
-                    ),
-                )
-                return await pros.edit_text(
-                    f"><b>Successfully demoted user {mention} from admin!</b>"
-                )
+            else:
+                try:
+                    await client.promote_chat_member(
+                        chat_id=message.chat.id,
+                        user_id=user_id,
+                        privileges=types.ChatPrivileges(
+                            can_change_info=False,
+                            can_invite_users=False,
+                            can_delete_messages=False,
+                            can_restrict_members=False,
+                            can_pin_messages=False,
+                            can_promote_members=False,
+                            can_manage_chat=False,
+                            can_manage_video_chats=False,
+                        ),
+                    )
+                    return await pros.edit_text(
+                        f"><b>Successfully demoted user {mention} from admin!</b>"
+                    )
+                except errors.ChatAdminRequired:
+                    return await pros.edit_text(
+                        f"><b>{mention} is not Promoted by me.</b>\n\n><b>I don't have Right Permissions to do This.</b>"
+                    )
     except Exception as er:
         return await pros.edit_text(
             f"><b>ERROR:</b>\n\n<pre><code>{str(er)}</code></pre>"
