@@ -390,7 +390,7 @@ async def pin_callback(client, callback):
         await r.pin(disable_notification=not disable_notification)
 
     await callback.message.edit(
-        f"><b>📌 Successfully Pin Message:</b>\n<blockquote expandable ><b><b>Message:</b> [This Message]({r.link})\n<b>Mode:</b> <code>{'🔕 Silent' if disable_notification else '🔔 Notification'}</code></blockquote>.",
+        f"><b>📌 Successfully Pin Message:</b>\n<blockquote expandable ><b><b>Message:</b> [This Message]({r.link})\n<b>Mode:</b> <code>{'🔕 Silent' if disable_notification else '🔔 Notification'}</code>.</blockquote>",
         disable_web_page_preview=True
     )
     return await callback.answer(
