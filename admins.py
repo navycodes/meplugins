@@ -245,12 +245,18 @@ async def staff_cmd(client, message):
             await client.send_photo(
                 message.chat.id,
                 photo=photo_path,
-                caption=f"{result}",
+                caption=f"<blockquote expandable>{result}</blockquote>",
             )
         except Exception:
-            await message.reply(f"{result}", disable_web_page_preview=True)
+            await message.reply(
+                f"<blockquote expandable>{result}</blockquote>",
+                disable_web_page_preview=True
+            )
     else:
-        await message.reply(f"{result}", disable_web_page_preview=True)
+        await message.reply(
+            f"<blockquote expandable>{result}</blockquote>",
+            disable_web_page_preview=True
+        )
 
     if photo_path and os.path.exists(photo_path):
         os.remove(photo_path)
@@ -285,33 +291,68 @@ async def purge_cmd(client, message):
 @ONLY_GROUP
 @ONLY_ADMIN
 async def del_cmd(_, message):
-    await message.delete()
     try:
+        await message.delete()
         return await message.reply_to_message.delete()
     except Exception:
         return
 
 
 @app.on_message(filters.command(["pin", "unpin"]) & ~config.BANNED_USERS)
-@ONLY_GROUP
-@ONLY_ADMIN
 async def pin_cmd(_, message):
-    if not message.reply_to_message:
-        return await message.reply_text("><b>Please reply to message!</b>")
     r = message.reply_to_message
-    if message.command[0][0] == "u":
+    if not r:
+        return await message.reply_text("><b>Please reply to a message to pin!</b>")
+
+    cmd = message.command[0].lower()
+    args = message.text.split() if len(message.command) >= 2 else ""
+
+    LOUD_FLAGS = ["-loud", "--loud", "-louds", "--louds"]
+    is_loud = bool(flag in args for flag in LOUD_FLAGS)
+
+    if cmd.startswith("u"):
         await r.unpin()
         return await message.reply_text(
             f"><b>Unpinned [this]({r.link}) message!</b>",
             disable_web_page_preview=True,
         )
+
     if message.chat.type == enums.ChatType.PRIVATE:
-        await r.pin(disable_notification=False, both_sides=True)
+        await r.pin(
+            disable_notification=is_loud,
+            both_sides=True
+        )
     else:
         await r.pin(
-            disable_notification=False,
+            disable_notification=is_loud
         )
-    return await message.reply(
+
+    return await message.reply_text(
         f"><b>Pinned [this]({r.link}) message!</b>",
         disable_web_page_preview=True,
     )
+
+
+# @app.on_message(filters.command(["pin", "unpin"]) & ~config.BANNED_USERS)
+# @ONLY_GROUP
+# @ONLY_ADMIN
+# async def pin_cmd(_, message):
+#     if not message.reply_to_message:
+#         return await message.reply_text("><b>Please reply to message!</b>")
+#     r = message.reply_to_message
+#     if message.command[0][0] == "u":
+#         await r.unpin()
+#         return await message.reply_text(
+#             f"><b>Unpinned [this]({r.link}) message!</b>",
+#             disable_web_page_preview=True,
+#         )
+#     if message.chat.type == enums.ChatType.PRIVATE:
+#         await r.pin(disable_notification=False, both_sides=True)
+#     else:
+#         await r.pin(
+#             disable_notification=False,
+#         )
+#     return await message.reply(
+#         f"><b>Pinned [this]({r.link}) message!</b>",
+#         disable_web_page_preview=True,
+#     )
