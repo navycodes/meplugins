@@ -298,38 +298,69 @@ async def del_cmd(_, message):
         return
 
 
-@app.on_message(filters.command(["pin", "unpin"]) & ~config.BANNED_USERS)
+@app.on_message(filters.command("pin") & ~config.BANNED_USERS)
+@ONLY_ADMIN
 async def pin_cmd(_, message):
     r = message.reply_to_message
     if not r:
         return await message.reply_text("><b>Please reply to a message to pin!</b>")
 
-    cmd = message.command[0].lower()
-    args = message.text.split() if len(message.command) > 2 else ""
+    keyboard = types.InlineKeyboardMarkup(
+        [
+            [
+                types.InlineKeyboardButton("📌 Pin (Silent)", callback_data=f"pincb_silent_{r.id}"),
+                types.InlineKeyboardButton("📢 Pin (Loud)", callback_data=f"pincb_loud_{r.id}")
+            ],
+            [
+                types.InlineKeyboardButton("🚮 Cancel", callback_data="pincb_cancel")
+            ]
+        ]
+    )
 
-    LOUD_FLAGS = ["-loud", "--loud", "-louds", "--louds"]
-    is_loud = bool(flag in args for flag in LOUD_FLAGS)
+    return await message.reply_text(
+        f">Choose how to pin [this]({r.link}) message:",
+        reply_markup=keyboard,
+        disable_web_page_preview=True,
+    )
 
-    if cmd.startswith("u"):
-        await r.unpin()
-        return await message.reply_text(
-            f"><b>Unpinned [this]({r.link}) message!</b>",
-            disable_web_page_preview=True,
+
+@app.on_callback_query(filters.regex("^pincb_"))
+async def pin_callback(client, callback):
+    data = callback.data
+
+    if data == "pincb_cancel":
+        await callback.message.edit("❌ Cancelled.")
+        return await callback.answer("Cancelled.")
+
+    try:
+        _, mode, msg_id = data.split("_")
+        msg_id = int(msg_id)
+    except Exception as e:
+        return await callback.answer(
+            f"Invalid callback data:\n\n{e}", show_alert=True
         )
 
-    if message.chat.type == enums.ChatType.PRIVATE:
+    try:
+        r = await client.get_messages(callback.message.chat.id, msg_id)
+    except Exception as e:
+        return await callback.answer(
+            f"Failed to fetch message:\n\n{e}", show_alert=True
+        )
+
+    disable_notification = mode == "silent"
+    if callback.message.chat.type == enums.ChatType.PRIVATE:
         await r.pin(
-            disable_notification=is_loud,
+            disable_notification=not disable_notification,
             both_sides=True
         )
     else:
         await r.pin(
-            disable_notification=is_loud
+            disable_notification=not disable_notification
         )
 
-    return await message.reply_text(
-        f"><b>Pinned [this]({r.link}) message!</b>",
-        disable_web_page_preview=True,
+    return await callback.message.edit(
+        f"><b>📌 Successfully Pin [This Message]({r.link}) with {'🔕 silent' if disable_notification else '🔔 notification'} mode.",
+        disable_web_page_preview=True
     )
 
 
