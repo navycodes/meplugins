@@ -1,4 +1,3 @@
-
 import os
 import shutil
 import traceback
@@ -9,8 +8,10 @@ from logs import LOGGER
 
 from pyrogram import filters, types
 from utils.bingtools import Bing
+from utils.database import get_lang
 from utils.decorators import Checklimit
 from utils.functions import update_user_data
+from strings import command, get_string
 
 __MODULE__ = "Bing-AI"
 
@@ -18,19 +19,21 @@ __HELP__ = "BINGAI_HELPER"
 
 
 
-@app.on_message(filters.command(["bingai", "genai"]) & ~config.BANNED_USERS)
+@app.on_message(command("BINGAI_COMMAND") & ~config.BANNED_USERS)
 @Checklimit("bingquery")
 async def bingai_cmd(client, message):
+    language = await get_lang(message.chat.id)
+    _ = get_string(language)
+    user_id = message.from_user.id if message.from_user else None
+    if not user_id or message.sender_chat:
+        return await message.reply_text(_["general_4"])
     prompt = client.get_text(message)
     if not prompt:
         return await message.reply(
-            f"><b>Give the query you want to make!\n\nExample: \n<code>{message.text.split()[0]} Picture a handsome Japanese man sitting on a bench, wearing a black hoodie with 'Navy Code' emblazoned on the front and glasses, casually smoking a cigarette. The background features a lush rainforest, with soft light filtering through the foliage, creating a serene and alluring atmosphere. Add the effect of cigarette smoke wafting through the air, giving the image a mysterious feel. Image quality should be 4K high with sharp details.</code></b>"
+            _["bingai_1"].format(message.text.split()[0])
         )
-    if message.sender_chat:
-        return await message.reply_text(">**Unable to use the channel account.**")
-    user_id = message.from_user.id
     pros = await message.reply(
-        f"<blockquote expandable><b>Proses generate <code>{prompt}</code> ..</b></blockquote>"
+        _["bingai_2"].format(prompt)
     )
     folder_name = f"downloads/{user_id}/"
     try:
@@ -39,7 +42,7 @@ async def bingai_cmd(client, message):
             media_group = []
             for img in imgs:
                 if os.path.exists(img):
-                    caption = "><b>Successfully generate image:</b>"
+                    caption = _["bingai_3"].format(app.me.mention)
                     media_group.append(types.InputMediaPhoto(media=img, caption=caption))
 
             if media_group:
@@ -59,17 +62,17 @@ async def bingai_cmd(client, message):
                     os.remove(img)
         else:
             return await pros.edit(
-                "><b>Images are not found or failed generate images.</b>"
+                _["bingai_4"]
             )
     except Exception as e:
         error_message = str(e)
         LOGGER.error(f"Bing error: {traceback.format_exc()}")
         if "Failed to decode" in error_message:
             return await pros.edit(
-                "><b>Failed generate image.Please repeat again...</b>"
+                _["bingai_5"]
             )
         else:
             return await pros.edit(
-                f"><b>Error:</b>\n <code>{error_message}</code>"
+                _["general_7"].format(error_message)
             )
     return
