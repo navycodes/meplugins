@@ -47,7 +47,7 @@ async def bingai_cmd(client, message):
             media_group = []
             for img in imgs:
                 if os.path.exists(img):
-                    caption = f"><b>Successfully generate image:</b>"
+                    caption = "><b>Successfully generate image:</b>"
                     media_group.append(types.InputMediaPhoto(media=img, caption=caption))
 
             if media_group:
@@ -67,14 +67,14 @@ async def bingai_cmd(client, message):
                     os.remove(img)
         else:
             return await pros.edit(
-                f"><b>Images are not found or failed generate images.</b>"
+                "><b>Images are not found or failed generate images.</b>"
             )
     except Exception as e:
         error_message = str(e)
         LOGGER.error(f"Bing error: {traceback.format_exc()}")
         if "Failed to decode" in error_message:
             return await pros.edit(
-                f"><b>Failed generate image.Please repeat again...</b>"
+                "><b>Failed generate image.Please repeat again...</b>"
             )
         else:
             return await pros.edit(
