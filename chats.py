@@ -98,12 +98,18 @@ async def handle_title(client, message):
         return await message.reply(
             "><b>Please give me title to set!</b>\n\n><b>Example:</b> <code>/title [username/reply user] [title] or reply to user with title!</code>"
         )
+
     try:
         user = await client.get_users(user_id)
+        mention = await client.get_mention_from_user(user)
+        admin_ids = await client.admin_list(message)
+        if user.id not in admin_ids:
+            return await message.reply(
+                f"><b>{mention} is not Admin on {message.chat.title or 'This Group'}.</b>"
+            )
         current_title = (
             await client.get_chat_member(message.chat.id, user.id)
         ).custom_title
-        mention = await client.get_mention_from_user(user)
         if not title:
             title = f"{user.first_name} {user.last_name or ''}"
         if len(title) > 16:
