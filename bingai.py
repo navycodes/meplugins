@@ -14,15 +14,7 @@ from utils.functions import update_user_data
 
 __MODULE__ = "Bing-AI"
 
-__HELP__ = """
-<blockquote expandable>
-
-🖼️ <b>Bing AI Image Generator</b>
-
-• <b>/bingai</b> (prompt) – Generate an image from your text prompt using Bing AI.
-
-</blockquote>
-"""
+__HELP__ = "BINGAI_HELPER"
 
 
 
