@@ -131,6 +131,7 @@ animp = AnimePics()
 async def waifu_command(client, message):
     cmd = message.command[0].lower()
     category = "sfw" if cmd in SFW_ENDPOINTS else "nsfw"
+    await message.delete()
     url = await animp.get_image(category, cmd)
     database_links = cmd.upper() + "DB"
     urls = await dB.get_list_from_var(config.BOT_ID, database_links)
@@ -150,12 +151,11 @@ async def waifu_command(client, message):
     try:
         reply_id = await client.ReplyCheck(message)
         if mime_type == "image/gif" or mime_type.startswith("video/"):
-            await message.reply_video(url, reply_to_message_id=reply_id)
+            return await message.reply_video(url, reply_to_message_id=reply_id)
         elif mime_type.startswith("image/"):
-            await message.reply_photo(url, reply_to_message_id=reply_id)
+            return await message.reply_photo(url, reply_to_message_id=reply_id)
         else:
-            await message.reply(url, reply_to_message_id=reply_id)
-        return await message.delete()
+            return await message.reply(url, reply_to_message_id=reply_id)
     except Exception as e:
         return await message.reply(
             f"<b>Gagal kirim media:</b>\n\n<pre><code>{e}</code></pre>"
