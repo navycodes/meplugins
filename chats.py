@@ -1,6 +1,3 @@
-
-
-
 import config
 import asyncio
 import traceback
@@ -46,57 +43,46 @@ Check how many messages a user has sent in the group.
 </blockquote>
 """
 
-async def has_permission(client, chat_id):
-    try:
-        member = await client.get_chat_member(chat_id, client.me.id)
-        return member.status == enums.ChatMemberStatus.ADMINISTRATOR
-    except Exception as e:
-        LOGGER.error(f"Error has_permission: {e}")
-        return False
-
 
 @app.on_message(filters.command(["setgcname", "setgcdesc", "setgcpic"]) & ~config.BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def group_cmd(client, message):
-    command = message.command
+    command = message.command[0].lower()
     reply = message.reply_to_message
-    chat = await client.get_chat(message.chat.id)
-    if command[0] == "setgcname":
-        if reply and not (reply.text or reply.caption):
+    if command == "setgcname":
+        if not (reply and (reply.text or reply.caption)):
             return await message.reply(
-                "><b>Example:</b> <code>/setgcname [reply to text]</code>"
+                "><b>Example:</b> <code>/setgcname</code> (reply to text message)"
             )
-        content = reply.text or reply.caption
-        await message.chat.set_title(content.strip())
+        content = (reply.text or reply.caption).strip()
+        await message.chat.set_title(content)
         return await message.reply(
-            f"><b>Successfully set title group: <code>{chat.title}</code> to: <code>{content}</code></b>"
+            f"><b>Group title changed to:</b> <code>{content}</code>"
         )
-    elif command[0] == "setgcdesc":
-        if reply and not (reply.text or reply.caption):
+
+    elif command == "setgcdesc":
+        if not (reply and (reply.text or reply.caption)):
             return await message.reply(
-                "><b>Example:</b> <code>/setgcdesc [reply to text]</code>"
+                "><b>Example:</b> <code>/setgcdesc</code> (reply to text message)"
             )
-        content = reply.text or reply.caption
-        await message.chat.set_description(content.strip())
+        content = (reply.text or reply.caption).strip()
+        await message.chat.set_description(content)
         return await message.reply(
-            f"><b>Successfully set description group: <code>{chat.description}</code> to: <code>{content}</code>"
+            f"><b>Group description updated to:</b> <code>{content}</code>"
         )
-    elif command[0] == "setgcpic":
-        if reply and not (reply.photo or reply.video):
+
+    elif command == "setgcpic":
+        if not (reply and (reply.photo or reply.video)):
             return await message.reply(
-                "><b>Example:</b> <code>/setgcpic [reply to foto or video]</code>"
-            )
-        if not (reply.photo or reply.video):
-            return await message.reply(
-                "><b>Only photo/video allowed!</b>"
+                "><b>Example:</b> <code>/setgcpic</code> (reply to photo or video)</b>"
             )
         media = reply.photo or reply.video
         kwargs = {"photo": media.file_id} if reply.photo else {"video": media.file_id}
         await client.set_chat_photo(message.chat.id, **kwargs)
         return await message.reply(
-            f"><b>Successfully changed [media]({reply.link}) to profile group!</b>",
-            disable_web_page_preview=True
+            f"><b>Group photo updated successfully from:</b> [media]({reply.link})",
+            disable_web_page_preview=True,
         )
 
 
