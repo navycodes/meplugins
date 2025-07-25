@@ -348,6 +348,7 @@ async def unpin_cmd(_, message):
 
 
 @app.on_callback_query(filters.regex("^(pincb_|unpincb_)"))
+@ONLY_ADMIN
 async def pin_callback(client, callback):
     data = callback.data
 
