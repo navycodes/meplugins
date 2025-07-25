@@ -1,4 +1,22 @@
+import config
+import random
+from core import app
 
+from pyrogram import filters
+
+
+__MODULE__ = "Truth-Dare"
+
+__HELP__ = """
+<blockquote expandable>
+
+📬 <b>Truth or Dare</b>
+
+• <b>/truth</b> – Answer challenge.
+• <b>/dare</b> – Answer challenge.
+
+</blockquote>
+"""
 
 
 truth_questions = [
@@ -107,35 +125,20 @@ dare_challenges = [
     "Ceritakan lelucon lucu yang pernah kamu dengar.",
 ]
 
-import config
-import random
-from core import app
-
-from pyrogram import filters
-
 
 @app.on_message(filters.command("truth") & ~config.BANNED_USERS)
 async def truth_cmd(client, message):
     text = random.choice(truth_questions)
-    return await message.reply(text)
+    return await message.reply(
+        f"<blockquote expandable>{text}</blockquote>",
+        reply_to_message_id=await client.ReplyCheck(message)
+    )
 
 
 @app.on_message(filters.command("dare") & ~config.BANNED_USERS)
-async def truth_cmd(client, message):
+async def dare_cmd(client, message):
     text = random.choice(dare_challenges)
-    return await message.reply(text)
-
-
-
-__MODULE__ = "Truth-Dare"
-
-__HELP__ = """
-<blockquote expandable>
-
-📬 <b>Truth or Dare</b>
-
-• <b>/truth</b> – Answer challenge.  
-• <b>/dare</b> – Answer challenge.  
-
-</blockquote>
-"""
+    return await message.reply(
+        f"<blockquote expandable>{text}</blockquote>",
+        reply_to_message_id=await client.ReplyCheck(message)
+    )
