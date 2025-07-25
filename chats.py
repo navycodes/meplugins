@@ -7,6 +7,8 @@ import traceback
 
 from core import app, userbot
 from pyrogram import filters, errors, enums
+from logs import LOGGER
+
 
 from utils.decorators import ONLY_GROUP, ONLY_ADMIN
 
@@ -48,7 +50,8 @@ async def has_permission(client, chat_id):
     try:
         member = await client.get_chat_member(chat_id, client.me.id)
         return member.status == enums.ChatMemberStatus.ADMINISTRATOR
-    except:
+    except Exception as e:
+        LOGGER.error(f"Error has_permission: {e}")
         return False
 
 
@@ -61,26 +64,41 @@ async def group_cmd(client, message):
     chat = await client.get_chat(message.chat.id)
     if command[0] == "setgcname":
         if reply and not (reply.text or reply.caption):
-            return await message.reply(f">**Example: `setgcname` [reply to text]!**")
+            return await message.reply(
+                "><b>Example:</b> <code>/setgcname [reply to text]</code>"
+            )
         content = reply.text or reply.caption
         await message.chat.set_title(content.strip())
-        return await message.reply(f">**Successfully set title group: `{chat.title}` to: `{content}`**")
+        return await message.reply(
+            f"><b>Successfully set title group: <code>{chat.title}</code> to: <code>{content}</code></b>"
+        )
     elif command[0] == "setgcdesc":
         if reply and not (reply.text or reply.caption):
-            return await message.reply(f">**Example: `setgcdesc` [reply to text]!**")
+            return await message.reply(
+                "><b>Example:</b> <code>/setgcdesc [reply to text]</code>"
+            )
         content = reply.text or reply.caption
         await message.chat.set_description(content.strip())
-        return await message.reply(f">**Successfully set description group: `{chat.description}` to: `{content}`**")
+        return await message.reply(
+            f"><b>Successfully set description group: <code>{chat.description}</code> to: <code>{content}</code>"
+        )
     elif command[0] == "setgcpic":
         if reply and not (reply.photo or reply.video):
-            return await message.reply(f">**Example: `setgcpic` [reply to foto or video]!**")
+            return await message.reply(
+                "><b>Example:</b> <code>/setgcpic [reply to foto or video]</code>"
+            )
         if not (reply.photo or reply.video):
-            return await message.reply(">**Only photo/video allowed, not documents!**")
+            return await message.reply(
+                "><b>Only photo/video allowed!</b>"
+            )
         media = reply.photo or reply.video
         kwargs = {"photo": media.file_id} if reply.photo else {"video": media.file_id}
         await client.set_chat_photo(message.chat.id, **kwargs)
-        return await message.reply(f"><b>Successfully changed [media]({reply.link}) to profile group!</b>", disable_web_page_preview=True)
-    
+        return await message.reply(
+            f"><b>Successfully changed [media]({reply.link}) to profile group!</b>",
+            disable_web_page_preview=True
+        )
+
 
 @app.on_message(filters.command(["settitle", "title"]) & ~config.BANNED_USERS)
 @ONLY_GROUP
@@ -88,28 +106,34 @@ async def group_cmd(client, message):
 async def handle_title(client, message):
     reply = message.reply_to_message
     if reply and reply.sender_chat:
-        return await message.reply(">**Please reply to user.**")
-    user_id = None
-    title = None
-    if reply:
-        user_id = reply.from_user.id
-        if len(message.command) > 1:
-            title = message.text.split(None, 1)[1]
-    elif len(message.command) > 2:
-        user_id = message.text.split()[1]
-        title = message.text.split(None, 2)[2]
+        return await message.reply("><b>Please reply to user.</b>")
+    user_id, title = await client.extract_user_and_reason(message)
     if not all([user_id, title]):
-        return await message.reply(f">**Please give me title to set. Example: `/title [username/reply user] [title]` or reply to user with title!**")
+        return await message.reply(
+            "><b>Please give me title to set!</b>\n\n><b>Example:</b> <code>/title [username/reply user] [title] or reply to user with title!</code>"
+        )
     try:
         user = await client.get_users(user_id)
         current_title = (
             await client.get_chat_member(message.chat.id, user.id)
         ).custom_title
-        mention = user.mention
-        await client.set_administrator_title(message.chat.id, user.id, title)
-        return await message.reply(f"><b>Successfully set title user: {mention} `{current_title}` to: `{title}`</b>")
+        mention = await client.get_mention_from_user(user)
+        if not title:
+            title = f"{user.first_name} {user.last_name or ''}"
+        if len(title) > 16:
+            title = title[:16]
+        await client.set_administrator_title(
+            message.chat.id,
+            user.id,
+            title
+        )
+        return await message.reply(
+            f"><b>Successfully set title user: {mention} `{current_title}` to: `{title}`</b>"
+        )
     except Exception as e:
-        return await message.reply(f"**ERROR: `{str(e)}`**")
+        return await message.reply(
+            f"<b>ERROR:</b>\n\n<pre><code>{str(e)}</code></pre>"
+        )
 
 
 @app.on_message(filters.command(["kickme"]) & ~config.BANNED_USERS)
@@ -131,14 +155,20 @@ async def kickme_cmd(client, message):
         elif chat_member.status == enums.ChatMemberStatus.MEMBER:
             status = "member"
     except Exception as er:
-        return await message.edit(f">**Error:** {str(er)}")
+        return await message.reply(
+            f"><b>Error:</b>\n\n<code>{str(er)}</code>"
+        )
     if status in ["admin", "owner"]:
-        return await message.reply(f">**Sorry you cant leave this chat because you as: {status} in this chat.!**")
+        return await message.reply(
+            f"><b>Sorry you cant leave this chat because you as: {status} in this chat.</b>"
+        )
     else:
         await message.chat.ban_member(user_id)
         await asyncio.sleep(0.5)
         await message.chat.unban_member(user_id)
-        return await message.reply(f">**Sepertinya dia {mention} depresi, ingin bunuh diri.**")
+        return await message.reply(
+            f"><b>Sepertinya {mention} depresi, ingin bunuh diri.</b>"
+        )
 
 
 @app.on_message(filters.command(["cc"]) & ~config.BANNED_USERS)
@@ -147,43 +177,53 @@ async def kickme_cmd(client, message):
 async def cc_cmd(client, message):
     reply = message.reply_to_message
     if reply and reply.sender_chat and reply.sender_chat != message.chat.id:
-        return  await message.reply_text(f">**Please reply to valid user_id!**")
+        return  await message.reply_text("><b>Please reply to valid user_id!</b>")
     try:
-        target = reply.from_user.id or reply.sender_chat.id if reply else message.text.split()[1]
+        target, _ = await client.extract_user_and_reason(message)
     except (AttributeError, IndexError):
-        return await message.reply(">**Please reply to valid user_id!**")
+        return await message.reply("><b>Please reply to valid user_id!</b>")
     try:
         user = await client.get_users(target)
+        user_id = user.id
     except (errors.PeerIdInvalid, KeyError, errors.UsernameInvalid, errors.UsernameNotOccupied):
-        return await message.reply(">**Please reply to valid user_id!**")
-    user_id = user.id
+        return await message.reply("><b>Please reply to valid user_id!</b>")
     try:
         await client.delete_user_history(message.chat.id, user_id)
-        return await message.reply(">**Succesfully delete message from user.**")
+        return await message.reply(
+            "><b>Succesfully delete message from user.</b>"
+        )
     except Exception:
-        return await message.reply(">**I dont have enough permission.**")
+        return await message.reply(
+            "><b>I dont have enough permission.</b>"
+        )
 
 
 @app.on_message(filters.command(["cekmember"]) & ~config.BANNED_USERS)
 async def cekmember_cmd(client, message):
-    chat_id = message.chat.id if len(message.command) < 2 else message.text.split()[1]
-    proses = await message.reply(">**Please wait...**")
+    chat_id, _ = await client.extract_chat_and_reason(client, message)
+    proses = await message.reply("><b>Please wait...</b>")
     try:
         member_count = await client.get_chat_members_count(chat_id)
         await asyncio.sleep(1)
-        return await proses.edit(f"**Total members in group: {chat_id} is `{member_count}` members.**")
+        return await proses.edit(
+            f"<b>Total members in group: {chat_id} is <code>{member_count}</code> members.</b>"
+        )
     except Exception as e:
-        return await proses.edit(f">**ERROR:** {str(e)}")
+        return await proses.edit(
+            f"><b>ERROR:</b>\n\n<code>{str(e)}</code>"
+        )
 
 
 @app.on_message(filters.command(["cekonline"]) & ~config.BANNED_USERS)
 async def cekonline_cmd(client, message):
-    proses = await message.reply(">**Please wait ...**")
+    proses = await message.reply("><b>Please wait ...</b>")
     client2 = userbot.clients[0]
-    chat_id = message.command[1] if len(message.command) > 1 else message.chat.id
-    isbot_admin = await has_permission(client, chat_id)
-    if not isbot_admin:
-        return await proses.edit(f">**Failed, maybe i dont have enough permission")
+    chat_id, _ = await client.extract_chat_and_reason(client, message)
+    admin_ids = await client.admin_list_by_id(client, chat_id)
+    if client.me.id not in admin_ids:
+        return await proses.edit(
+            f"><b>Failed, maybe i dont have enough permission in <code>{chat_id}</code></b>"
+        )
     get = await client.get_chat_member(chat_id, client2.me.id)
     if get.status in [
         enums.ChatMemberStatus.BANNED,
@@ -196,22 +236,28 @@ async def cekonline_cmd(client, message):
     except errors.UserAlreadyParticipant:
         pass
     except Exception as err:
-        print(f"ERROR: {traceback.format_exc()}")
-        return await proses.edit(f">**Failed, maybe i dont have enough permission: {str(err)}")
+        LOGGER.errot(f"ERROR: {traceback.format_exc()}")
+        return await proses.edit(
+            f"><b>Error:</b>:\n\n<code>{str(err)}</code>"
+        )
 
     try:
         member_online = await client2.get_chat_online_count(chat_id)
         await asyncio.sleep(1)
-        return await proses.edit(f">**Total members online in group: {chat_id} is `{member_online}` members.**")
+        return await proses.edit(
+            f"><b>Total members online in group: <code>{chat_id}</code> is <code>{member_online}</code> members.</b>"
+        )
     except Exception as e:
-        return await proses.edit(f">**ERROR:** {str(e)}")
+        return await proses.edit(
+            f"><b>ERROR:</b>\n\n<code>{str(e)}</code>"
+        )
 
 
 @app.on_message(filters.command(["cekmsg"]) & ~config.BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
 async def cekmsg_cmd(client, message):
-    proses = await message.reply(">**Please wait ...**")
+    proses = await message.reply("><b>Please wait ...</b>")
     chat_id = None
     user_id = None
     client2 = userbot.clients[0]
@@ -224,34 +270,44 @@ async def cekmsg_cmd(client, message):
         chat_id = message.chat.id
 
     if not user_id:
-        return await message.reply_text("**Please reply to a user or provide a username/ID!**")
-    isbot_admin = await has_permission(client, chat_id)
-    if not isbot_admin:
-        return await proses.edit(f">**Failed, maybe i dont have enough permission")
+        return await proses.edit("><b>Please reply to a user or provide a username/ID!</b>")
+    admin_ids = await client.admin_list_by_id(client, chat_id)
+    if client.me.id not in admin_ids:
+        return await proses.edit(
+            f"><b>Failed, maybe i dont have enough permission in <code>{chat_id}</code></b>"
+        )
     get = await client.get_chat_member(chat_id, client2.me.id)
     if get.status in [
         enums.ChatMemberStatus.BANNED,
         enums.ChatMemberStatus.RESTRICTED,
     ]:
-            await client.unban_chat_member(chat_id, client2.me.id)
+        await client.unban_chat_member(chat_id, client2.me.id)
     try:
         link = await client.export_chat_invite_link(chat_id)
         await client2.join_chat(link)
     except errors.UserAlreadyParticipant:
         pass
     except Exception as err:
-        print(f"ERROR: {traceback.format_exc()}")
-        return await proses.edit(f">**Failed, maybe i dont have enough permission: {str(err)}")
+        LOGGER.error(f"ERROR: {traceback.format_exc()}")
+        return await proses.edit(
+            f"><b>Error:</b>:\n\n<code>{str(err)}</code>"
+        )
 
     try:
         user = await client2.get_users(user_id)
-        umention = user.mention
+        umention = await client.get_mention_from_user(user)
     except (errors.PeerIdInvalid, KeyError):
-        return await message.reply_text(f">**Error: PeerIdInvalid or invalid user ID/username.**")
+        return await proses.edit(
+            "><b>Error: PeerIdInvalid or invalid user ID/username.</b>"
+        )
     try:
 
         total_msg = await client2.search_messages_count(chat_id, from_user=user.id)
         await asyncio.sleep(1)
-        await proses.edit(f">**Total messages by {umention} in chat `{chat_id}`: `{total_msg}` messages.**")
+        return await proses.edit(
+            f"><b>Total messages by {umention} in chat <code>{chat_id}</code>: <code>{total_msg}</code> messages.</b>"
+        )
     except Exception as e:
-        await proses.edit(f">**Error:** `{str(e)}`")
+        return await proses.edit(
+            f"><b>Error:</b>\n\n<code>{str(e)}</code>"
+        )
