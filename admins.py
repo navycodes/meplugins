@@ -351,11 +351,15 @@ async def unpin_cmd(_, message):
 @ONLY_ADMIN_CB
 async def pin_callback(client, callback):
     data = callback.data
-
     if data == "pincb_cancel":
-        await callback.message.edit("❌ Cancelled.")
-        return await callback.answer("Cancelled.")
+        await callback.message.delete()
+        return await callback.answer("Cancelled.", show_alert=True)
 
+    button_close = types.InlineKeyboardMarkup(
+        [
+            [types.InlineKeyboardButton("🚮", callback_data="close")]
+        ]
+    )
     if data.startswith("unpincb_"):
         try:
             msg_id = int(data.split("_")[1])
@@ -366,6 +370,7 @@ async def pin_callback(client, callback):
         await r.unpin()
         await callback.message.edit(
             f"><b>🔓 [This Message]({r.link}) Un-Pinned Successfully!",
+            reply_markup=button_close,
             disable_web_page_preview=True
         )
         return await callback.answer(
@@ -392,6 +397,7 @@ async def pin_callback(client, callback):
 
     await callback.message.edit(
         f"><b>📌 Successfully Pin Message:</b>\n<blockquote expandable ><b><b>💌 Message:</b> [This Message]({r.link})\n<b>📳 Mode:</b> <code>{'🔕 Silent' if disable_notification else '🔔 Notification'}</code>.</blockquote>",
+        reply_markup=button_close,
         disable_web_page_preview=True
     )
     return await callback.answer(
