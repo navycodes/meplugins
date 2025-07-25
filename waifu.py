@@ -16,60 +16,58 @@ __MODULE__ = "Waifu"
 __HELP__ = """
 <blockquote expandable>
 <b>🎌 Waifu Commands</b>
+<i><u>Interact with fun anime-style media! Use w/o replying.</u></i>
 
-<b>🌸 SFW Actions</b>
-Interact with fun anime-style media! Use w/o replying.
+<b>🌸 SFW Actions:</b>
+★ /slap
+★ /hug
+★ /kiss
+★ /pat
+★ /lick
+★ /cuddle
+★ /blush
+★ /cry
+★ /smile
+★ /poke
+★ /wave
+★ /yeet
+★ /highfive
+★ /handhold
+★ /glomp
+★ /dance
+★ /cringe
+★ /kill
+★ /wink
+★ /happy
+★ /bite
+★ /nom
+★ /awoo
+★ /smug
+★ /bully
 
-<code>/slap</code>
-<code>/hug</code>
-<code>/kiss</code>
-<code>/pat</code>
-<code>/lick</code>
-<code>/cuddle</code>
-<code>/blush</code>
-<code>/cry</code>
-<code>/smile</code>
-<code>/poke</code>
-<code>/wave</code>
-<code>/yeet</code>
-<code>/boonk</code>
-<code>/highfive</code>
-<code>/handhold</code>
-<code>/glomp</code>
-<code>/dance</code>
-<code>/cringe</code>
-<code>/kill</code>
-<code>/wink</code>
-<code>/happy</code>
-<code>/bite</code>
-<code>/nom</code>
-<code>/awoo</code>
-<code>/smug</code>
-<code>/bully</code>
+<b>✨ Waifu Actions:</b>
+★ /waifu
+★ /shinobu
+★ /megumin
 
-<b>✨ Waifu Series</b>
-<code>/waifu</code>
-<code>/shinobu</code>
-<code>/megumin</code>
-
-<b>🔞 NSFW Section</b>
-For mature users only:
-<code>/waifu</code>
-<code>/neko</code>
-<code>/trap</code>
-<code>/blowjob</code>
+<b>🔞 NSFW Actions:</b>
+For Adult (21+) users only:
+★ /waifuplus
+★ /neko
+★ /trap
+★ /blowjob
 </blockquote>
 """
 
 
 SFW_ENDPOINTS = [
     "slap", "waifu", "shinobu", "megumin", "bully", "cuddle", "cry", "hug",
-    "awoo", "kiss", "lick", "pat", "smug", "boonk", "yeet", "blush", "smile",
+    "awoo", "kiss", "lick", "pat", "smug", "yeet", "blush", "smile",
     "wave", "highfive", "handhold", "nom", "bite", "glomp", "kill", "happy",
     "wink", "poke", "dance", "cringe",
 ]
 
-NSFW_ENDPOINTS = ["waifu", "neko", "trap", "blowjob"]
+NSFW_ENDPOINTS = ["waifuplus", "neko", "trap", "blowjob"]
 
 COMMAND_PATTERN = list(dict.fromkeys(SFW_ENDPOINTS + NSFW_ENDPOINTS))
 
