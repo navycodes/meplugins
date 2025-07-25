@@ -15,44 +15,50 @@ from logs import LOGGER
 __MODULE__ = "Waifu"
 __HELP__ = """
 <blockquote expandable>
-<b>🎌 Anime 📖</b>
+<b>🎌 Waifu Commands</b>
 
-<b>🌸 SFW</b>
-★ /slap [Optipnal(Reply to User Message)] Send Random Media slapping.
-★ /waifu [Optipnal(Reply to User Message)] Send Random Media Waifu.
-★ /shinobu [Optipnal(Reply to User Message)] Send Random Media Shinobu.
-★ /megumin [Optipnal(Reply to User Message)] Send Random Media Megumin.
-★ /bully [Optipnal(Reply to User Message)] Send Random Media Bully.
-★ /cuddle [Optipnal(Reply to User Message)] Send Random Media Cuddle.
-★ /cry [Optipnal(Reply to User Message)] Send Random Media Cry.
-★ /hug [Optipnal(Reply to User Message)] Send Random Media Hug.
-★ /awoo [Optipnal(Reply to User Message)] Send Random Media Awoo.
-★ /kiss [Optipnal(Reply to User Message)] Send Random Media Kiss.
-★ /lick [Optipnal(Reply to User Message)] Send Random Media Lick.
-★ /pat [Optipnal(Reply to User Message)] Send Random Media Pat.
-★ /smug [Optipnal(Reply to User Message)] Send Random Media Smug.
-★ /boonk [Optipnal(Reply to User Message)] Send Random Media Boonk.
-★ /yeet [Optipnal(Reply to User Message)] Send Random Media Yeet.
-★ /blush [Optipnal(Reply to User Message)] Send Random Media Blush.
-★ /smile [Optipnal(Reply to User Message)] Send Random Media Smile.
-★ /wave [Optipnal(Reply to User Message)] Send Random Media Wave.
-★ /highfive [Optipnal(Reply to User Message)] Send Random Media HighFive.
-★ /handhold [Optipnal(Reply to User Message)] Send Random Media HandHold.
-★ /nom [Optipnal(Reply to User Message)] Send Random Media Nom.
-★ /bite [Optipnal(Reply to User Message)] Send Random Media Bite.
-★ /glomp [Optipnal(Reply to User Message)] Send Random Media Glomp.
-★ /kill [Optipnal(Reply to User Message)] Send Random Media Kill.
-★ /happy [Optipnal(Reply to User Message)] Send Random Media Happy.
-★ /wink [Optipnal(Reply to User Message)] Send Random Media Wink.
-★ /poke [Optipnal(Reply to User Message)] Send Random Media Poke.
-★ /dance [Optipnal(Reply to User Message)] Send Random Media Dance.
-★ /cringe [Optipnal(Reply to User Message)] Send Random Media Cringe.
-<b> ---------------------------------------</b>
-<b>🔞 NSFW</b>
-★ /waifu [Optipnal(Reply to User Message)] Send Random Nsfw Media Waifu.
-★ /neko [Optipnal(Reply to User Message)] Send Random Nsfw Media Neko.
-★ /trap [Optipnal(Reply to User Message)] Send Random Nsfw Media Trap.
-★ /blowjob [Optipnal(Reply to User Message)] Send Random Nsfw Media BlowJob.
+<b>🌸 SFW Actions</b>
+Interact with fun anime-style media! Use w/o replying.
+
+<code>/slap</code>
+<code>/hug</code>
+<code>/kiss</code>
+<code>/pat</code>
+<code>/lick</code>
+<code>/cuddle</code>
+<code>/blush</code>
+<code>/cry</code>
+<code>/smile</code>
+<code>/poke</code>
+<code>/wave</code>
+<code>/yeet</code>
+<code>/boonk</code>
+<code>/highfive</code>
+<code>/handhold</code>
+<code>/glomp</code>
+<code>/dance</code>
+<code>/cringe</code>
+<code>/kill</code>
+<code>/wink</code>
+<code>/happy</code>
+<code>/bite</code>
+<code>/nom</code>
+<code>/awoo</code>
+<code>/smug</code>
+<code>/bully</code>
+
+<b>✨ Waifu Series</b>
+<code>/waifu</code>
+<code>/shinobu</code>
+<code>/megumin</code>
+
+<b>🔞 NSFW Section</b>
+For mature users only:
+<code>/waifu</code>
+<code>/neko</code>
+<code>/trap</code>
+<code>/blowjob</code>
+</blockquote>
 """
 
 
