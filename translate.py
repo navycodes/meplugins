@@ -105,13 +105,13 @@ emoji_flags = {
 }
 
 
-def get_language_keyboard(lang_dict: dict, row_width=3):
+def get_language_keyboard(user_id: int, lang_dict: dict, row_width=3):
     buttons = []
     row = []
     for name, code in lang_dict.items():
         flag = emoji_flags.get(code.lower(), "🏳️")
         label = f"{flag} {code.upper()}"
-        row.append(InlineKeyboardButton(label, callback_data=f"setlang_{code}"))
+        row.append(InlineKeyboardButton(label, callback_data=f"setlang_{code}_{user_id}"))
         if len(row) == row_width:
             buttons.append(row)
             row = []
@@ -120,34 +120,13 @@ def get_language_keyboard(lang_dict: dict, row_width=3):
     return InlineKeyboardMarkup(buttons)
 
 
-def format_lang_table(lang_dict: dict) -> str:
-    col_width = 24
-    max_per_row = 2
-    separator = " | "
-    rows = []
-    bahasa_list = list(lang_dict.items())
-
-    for i in range(0, len(bahasa_list), max_per_row):
-        row = bahasa_list[i : i + max_per_row]
-        cells = []
-        for lang, code in row:
-            flag = emoji_flags.get(code.lower(), "🏳️")
-            name_short = shorten(lang, width=col_width - 12, placeholder="…")
-            cell = f"{flag} {name_short:<{col_width - 10}} [<code>{code}</code>]"
-            cells.append(cell)
-        line = separator.join(cell.ljust(col_width) for cell in cells)
-        rows.append(line.rstrip())
-
-    return "\n".join(rows)
-
-
 @app.on_message(filters.command(["setlang"]) & ~config.BANNED_USERS)
 async def setlang_cmd(client, message):
     args = message.command
     if len(args) < 2:
         return await message.reply_text(
             "><b>🌐 Please Choose a language on the Button Below:</b>",
-            reply_markup=get_language_keyboard(Tools.kode_bahasa)
+            reply_markup=get_language_keyboard(message.from_user.id, Tools.kode_bahasa)
         )
 
     pros = await message.reply("**Processing...**")
@@ -165,17 +144,23 @@ async def setlang_cmd(client, message):
     )
 
 
-@app.on_callback_query(filters.regex(r"^setlang_(.+)"))
+@app.on_callback_query(filters.regex(r"^setlang_([^_]+)_(\d+)$"))
 async def setlang_cb(client, callback):
-    data = callback.data
-    print(f"Data: {data}")
-    code = callback.matches[0].group(1)
-    lang_dict = Tools.kode_bahasa
-    for lang, c in lang_dict.items():
+    code, user_id = callback.matches[0].group(1), int(callback.matches[0].group(2))
+
+    if callback.from_user.id != user_id:
+        return await callback.answer("⚠️ You are not allowed to use this button.", show_alert=True)
+
+    for lang, c in Tools.kode_bahasa.items():
         if code == c.lower():
-            await dB.set_var(client.me.id, "_translate", code)
-            return await callback.answer(f"Language set to {lang} ({code.upper()}) ✅", show_alert=True)
-    await callback.answer("❌ Invalid language!", show_alert=True)
+            await dB.set_var(user_id, "_translate", code)
+            return await callback.message.edit(
+                f"<b>✅ Language set to:</b> <code>{lang}</code> (<code>{code.upper()}</code>)",
+                reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton("🚮 Close", callback_data="close")]
+                ])
+            )
+    return await callback.answer("❌ Invalid language!", show_alert=True)
 
 
 # @app.on_message(filters.command(["setlang"]) & ~config.BANNED_USERS)
