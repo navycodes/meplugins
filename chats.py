@@ -174,6 +174,10 @@ async def cc_cmd(client, message):
         target, _ = await client.extract_user_and_reason(message)
     except (AttributeError, IndexError):
         return await message.reply("><b>Please reply to valid user_id!</b>")
+    if not target:
+        return await message.reply(
+            "><b>Please reply to valid user_id!</b>"
+        )
     try:
         user = await client.get_users(target)
         user_id = user.id
