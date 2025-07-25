@@ -122,18 +122,21 @@ def get_language_keyboard(user_id: int, lang_dict: dict, row_width=3):
 
 @app.on_message(filters.command(["setlang"]) & ~config.BANNED_USERS)
 async def setlang_cmd(client, message):
+    user_id = message.from_user.id if message.from_user else None
+    if not user_id:
+        return
     args = message.command
     if len(args) < 2:
         return await message.reply_text(
             "><b>🌐 Please Choose a language on the Button Below:</b>",
-            reply_markup=get_language_keyboard(message.from_user.id, Tools.kode_bahasa)
+            reply_markup=get_language_keyboard(user_id, Tools.kode_bahasa)
         )
 
     pros = await message.reply("**Processing...**")
     kd = args[1].lower()
     for lang, code in Tools.kode_bahasa.items():
         if kd == code.lower():
-            await dB.set_var(client.me.id, "_translate", kd)
+            await dB.set_var(user_id, "_translate", kd)
             return await pros.edit(
                 "<b>✅ Language set to:</b> "
                 f"<code>{lang} ({code})</code>"
