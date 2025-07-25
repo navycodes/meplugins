@@ -98,6 +98,8 @@ class AnimePics:
     async def get_image(
         self, category: Literal["sfw", "nsfw"] = "sfw", endpoint: str = "waifu"
     ) -> Optional[str]:
+        if endpoint == "waifuplus":
+            endpoint = "waifu"
         url = f"{self.BASE_URL}/{category}/{endpoint}"
         try:
             response = await self.client.get(url)
