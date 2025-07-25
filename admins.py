@@ -7,7 +7,7 @@ import asyncio
 from core import app
 from pyrogram import filters, errors, types, enums
 
-from utils.decorators import ONLY_GROUP, ONLY_ADMIN
+from utils.decorators import ONLY_GROUP, ONLY_ADMIN, ONLY_ADMIN_CB
 
 
 __MODULE__ = "Admin-Tools"
@@ -348,7 +348,7 @@ async def unpin_cmd(_, message):
 
 
 @app.on_callback_query(filters.regex("^(pincb_|unpincb_)"))
-@ONLY_ADMIN
+@ONLY_ADMIN_CB
 async def pin_callback(client, callback):
     data = callback.data
 
