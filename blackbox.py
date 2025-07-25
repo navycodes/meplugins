@@ -33,7 +33,7 @@ async def blackbox_cmd(client, message):
     proses = await message.reply(">**Proses your request...**")
     if len(message.command) < 2:
         return await proses.edit(
-            f">**Please give a prompt or reply with an image and prompt.**"
+            "><b>Please give a prompt or reply with an image and prompt.</b>"
         )
     user_id = message.from_user.id
     prompt = client.get_text(message)
@@ -43,7 +43,7 @@ async def blackbox_cmd(client, message):
         if message.reply_to_message and message.reply_to_message.photo:
             if len(message.command) < 2:
                 return await proses.edit(
-                    f">**Please provide a prompt to analyze the image.**"
+                    "><b>Please provide a prompt to analyze the image.</b>"
                 )
             photo_url = await Tools.upload_media(message)
 
