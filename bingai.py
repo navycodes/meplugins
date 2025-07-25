@@ -24,7 +24,7 @@ async def bingai_cmd(client, message):
     prompt = client.get_text(message)
     if not prompt:
         return await message.reply(
-            f"><b>Give the query you want to make!\n\nExample: \n<code>{message.text.split()[0]} Gambarkan lelaki Jepang tampan sedang duduk di bangku, mengenakan hoodie hitam dengan tulisan 'Kynan only Me' di bagian depan dan kacamata, sambil menghisap rokok dengan sikap santai. Latar belakang menampilkan hutan hujan yang rimbun, dengan cahaya lembut yang menerobos di antara dedaunan, menciptakan suasana tenang dan memikat. Tambahkan efek asap rokok yang melayang di udara, memberikan nuansa misterius pada gambar. Kualitas gambar harus tinggi (4k) dengan detail yang tajam dan warna alami yang kaya || Hindari elemen yang terlalu cerah, ekspresi wajah yang berlebihan, dan latar belakang yang terlalu ramai yang dapat mengalihkan perhatian dari sosok utama.</code></b>"
+            f"><b>Give the query you want to make!\n\nExample: \n<code>{message.text.split()[0]} Picture a handsome Japanese man sitting on a bench, wearing a black hoodie with 'Navy Code' emblazoned on the front and glasses, casually smoking a cigarette. The background features a lush rainforest, with soft light filtering through the foliage, creating a serene and alluring atmosphere. Add the effect of cigarette smoke wafting through the air, giving the image a mysterious feel. Image quality should be 4K high with sharp details.</code></b>"
         )
     if message.sender_chat:
         return await message.reply_text(">**Unable to use the channel account.**")
