@@ -116,7 +116,7 @@ Yang telah hadir, silakan klik tombol HADIR di bawah ini."""
 @app.on_message(filters.command("selesai") & ~config.BANNED_USERS)
 @ONLY_GROUP
 @ONLY_ADMIN
-async def refresh_absen(_, message):
+async def selesai_absen(_, message):
     now = datetime.now(pytz.timezone("Asia/Jakarta"))
     date_str = format_tanggal_indo(now)
     chat_id = message.chat.id
