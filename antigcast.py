@@ -31,7 +31,7 @@ async def removeword(chat_id, text):
 @ONLY_GROUP
 @ONLY_ADMIN
 @VerifyAnkes
-async def ankestools(_, message):
+async def ankestools(client, message):
     chat_id = message.chat.id
     if len(message.command) < 2:
         return await message.reply(">**Gunakan format `/protect [on/off]`**")
@@ -41,7 +41,7 @@ async def ankestools(_, message):
         if status:
             return await message.reply(">**Protect sudah diaktifkan**")
         await dB.set_var(chat_id, "PROTECT", jk)
-        Deleter.SETUP_CHATS.add(chat_id)
+        await Deleter.setup_antigcast(client, message)
         return await message.reply(f">**Berhasil mengatur protect menjadi {jk}.**\n\n**If admin messages are deleted by bots after enabling /antigcast on .\nJust type /reload to refresh admin list**")
     elif jk in ["Off", "off"]:
         if status is None:
