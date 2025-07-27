@@ -60,6 +60,10 @@ async def clear_approved(_, message):
     chat_id = message.chat.id
     users = await dB.get_list_from_var(chat_id, "APPROVED_USERS")
     for user in users:
+        try:
+            Deleter.WHITELIST_USER.remove(user)
+        except Exception:
+            pass
         await dB.remove_from_var(chat_id, "APPROVED_USERS", user)
     return await message.reply(">**Berhasil menghapus semua pengguna approved.**")
 
@@ -70,6 +74,10 @@ async def clear_blackuser(_, message):
     chat_id = message.chat.id
     cekpre = await dB.get_list_from_var(chat_id, "SILENT_USER")
     for pre in cekpre:
+        try:
+            Deleter.BLACKLIST_USER.remove(pre)
+        except Exception:
+            pass
         await dB.remove_from_var(chat_id, "SILENT_USER", pre)
     return await message.reply(">**Berhasil menghapus list black pengguna.**")
 
@@ -96,7 +104,7 @@ async def add_approve(client, message):
     if ids in freedom:
         return await message.reply_text(">**Pengguna sudah disetujui.**")
     await dB.add_to_var(chat_id, "APPROVED_USERS", ids)
-    Deleter.WHITELIST_USER.add(ids)
+    Deleter.WHITELIST_USER[chat_id].append(ids)
     return await message.reply(f">**Pengguna: {user.mention} telah disetujui tidak akan terkena antigcast.")
 
 
@@ -123,7 +131,7 @@ async def un_approve(client, message):
     if ids not in freedom:
         return await message.reply_text(">**Pengguna memang belum disetujui.**")
     await dB.remove_from_var(chat_id, "APPROVED_USERS", ids)
-    Deleter.WHITELIST_USER.remove(ids)
+    Deleter.WHITELIST_USER[chat_id].remove(ids)
     return await message.reply(f">**Pengguna: {user.mention} telah dihapus dari daftar approved.**")
 
 @app.on_message(filters.command(["listwhite", "approved"]) & ~BANNED_USERS)
@@ -186,7 +194,7 @@ async def _(client, message):
     if ids in dicekah:
         return await message.reply_text(">**Pengguna sudah diblacklist.**")
     await dB.add_to_var(chat_id, "SILENT_USER", ids)
-    Deleter.BLACKLIST_USER.add(ids)
+    Deleter.BLACKLIST_USER[chat_id].append(ids)
     msg = await message.reply(f">**Pengguna: {ids} ditambahkan ke blacklist.**")
     await asyncio.sleep(1)
     return await msg.delete()
@@ -213,7 +221,7 @@ async def _(client, message):
     if ids not in dicekah:
         return await message.reply_text("User not in blacklist.")
     await dB.remove_from_var(chat_id, "SILENT_USER", ids)
-    Deleter.BLACKLIST_USER.remove(ids)
+    Deleter.BLACKLIST_USER[chat_id].remove(ids)
     msg = await message.reply(f">**Pengguna: {ids} dihapus ke blacklist.**")
     await asyncio.sleep(1)
     return await msg.delete()
