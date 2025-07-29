@@ -61,14 +61,14 @@ async def tagall_cmd(client, message):
                     continue
 
                 usernum += 1
-                usertxt += f"[{random_emoji()}](tg://user?id={m.user.id}) "
+                usertxt += f"<blockquote>[{random_emoji()}](tg://user?id={m.user.id})</blockquote>"
 
                 if usernum == 7:
                     if replied:
                         await replied.reply_text(usertxt, disable_web_page_preview=True)
                     else:
                         text = message.text.split(maxsplit=1)[1]
-                        await client.send_message(chat_id, f"<b>{text}\n{usertxt}</b>", disable_web_page_preview=True)
+                        await client.send_message(chat_id, f"<blockquote><b>{text}</b></blockquote>\n<blockquote><b>{usertxt}</blockquote></b>", disable_web_page_preview=True)
                     await asyncio.sleep(5)
                     usernum = 0
                     usertxt = ""
@@ -78,7 +78,7 @@ async def tagall_cmd(client, message):
                     await replied.reply_text(usertxt, disable_web_page_preview=True)
                 else:
                     text = message.text.split(maxsplit=1)[1]
-                    await client.send_message(chat_id, f"<b>{text}\n{usertxt}</b>", disable_web_page_preview=True)
+                    await client.send_message(chat_id, f"<blockquote><b>{text}\n{usertxt}</b></blockquote>", disable_web_page_preview=True)
 
         except errors.FloodWait as e:
             await asyncio.sleep(e.value)
@@ -139,13 +139,13 @@ async def tagadmins_cmd(client, message):
             if m.user.is_deleted or m.user.is_bot:
                 continue
             usernum += 1
-            usertxt += f"[{random_emoji()}](tg://user?id={m.user.id})  "
+            usertxt += f"<blockquote>[{random_emoji()}](tg://user?id={m.user.id})</blockquote>"
             if usernum == 7:
                 if replied:
                     await replied.reply_text(usertxt, disable_web_page_preview=True)
                 else:
                     text = message.text.split(maxsplit=1)[1]
-                    await client.send_message(chat_id, f"{text}\n{usertxt}", disable_web_page_preview=True)
+                    await client.send_message(chat_id, f"<blockquote>{text}</blockquote>\n<blockquote>{usertxt}</blockquote>", disable_web_page_preview=True)
                 await asyncio.sleep(2)
                 usernum = 0
                 usertxt = ""
@@ -154,7 +154,7 @@ async def tagadmins_cmd(client, message):
                 await replied.reply_text(usertxt, disable_web_page_preview=True)
             else:
                 text = message.text.split(maxsplit=1)[1]
-                await client.send_message(chat_id, f"{text}\n{usertxt}", disable_web_page_preview=True)
+                await client.send_message(chat_id, f"<blockquote>{text}</blockquote>\n<blockquote>{usertxt}</blockquote>", disable_web_page_preview=True)
     except errors.FloodWait as e:
         await asyncio.sleep(e.value)
     finally:
