@@ -7,6 +7,7 @@ from config import BANNED_USERS
 from core import app
 
 from pyrogram import enums, filters
+from utils.database import get_assistant
 
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import enums
@@ -53,7 +54,8 @@ async def logo_cmd(client, message):
 
     if not backgrounds:
         pics = []
-        async for i in client.search_messages(
+        userbot = await get_assistant(message.chat.id)
+        async for i in userbot.search_messages(
             "RynLogo", filter=enums.MessagesFilter.PHOTO
         ):
             if i.photo:
