@@ -24,7 +24,7 @@ __HELP__ = """
 </blockquote>
 """
 
-@app.on_message("logo") & ~BANNED_USERS))
+@app.on_message(("logo") & ~BANNED_USERS))
 async def logo_cmd(client, message):
     name = client.get_arg(message)
 
