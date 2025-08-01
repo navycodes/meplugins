@@ -6,7 +6,7 @@ import config
 from config import BANNED_USERS
 from core import app
 
-from pyrogram import enums
+from pyrogram import enums, filters
 
 from PIL import Image, ImageDraw, ImageFont
 from pyrogram import enums
@@ -24,7 +24,7 @@ __HELP__ = """
 </blockquote>
 """
 
-@app.on_message(("logo") & ~BANNED_USERS))
+@app.on_message(filters.command("logo") & ~BANNED_USERS)
 async def logo_cmd(client, message):
     name = client.get_arg(message)
 
