@@ -54,7 +54,7 @@ async def logo_cmd(client, message):
     if not backgrounds:
         pics = []
         async for i in client.search_messages(
-            "logosbackground", filter=enums.MessagesFilter.PHOTO
+            "RynLogo", filter=enums.MessagesFilter.PHOTO
         ):
             if i.photo:
                 pics.append(i)
