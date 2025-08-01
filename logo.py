@@ -10,8 +10,9 @@ from pyrogram import enums, filters
 from utils.database import get_assistant
 
 from PIL import Image, ImageDraw, ImageFont
-from pyrogram import enums
+
 from logs import LOGGER
+
 
 __MODULE__ = "Logo"
 __HELP__ = """
@@ -28,12 +29,11 @@ __HELP__ = """
 @app.on_message(filters.command("logo") & ~BANNED_USERS)
 async def logo_cmd(client, message):
     name = client.get_arg(message)
-
     if not name:
         return await message.reply(
-            f"><b>Gunakan Perintah dengan cara:</b>\n\n><b>Contoh:</b> <code>/logo</code> Rawwwrrr</b>"
+            "><b>Gunakan Perintah dengan cara:</b>\n\n><b>Contoh:</b> <code>/logo</code> Rawwwrrr</b>"
         )
-
+    userbot = await get_assistant(message.chat.id)
     pros = await message.reply(
         f"><b>Sedang Proses membuat logo <code>{name}</code>...</b>"
     )
@@ -54,7 +54,6 @@ async def logo_cmd(client, message):
 
     if not backgrounds:
         pics = []
-        userbot = await get_assistant(message.chat.id)
         async for i in userbot.search_messages(
             "RynLogo", filter=enums.MessagesFilter.PHOTO
         ):
@@ -65,7 +64,7 @@ async def logo_cmd(client, message):
             backgrounds = await pictures.download()
 
     if not fonts:
-        font_path = glob.glob("storage/*")
+        font_path = glob.glob("assets/*")
         valid_fonts = [f for f in font_path if f.endswith((".ttf", ".otf"))]
         if valid_fonts:
             fonts = random.choice(valid_fonts)
@@ -88,7 +87,7 @@ async def logo_cmd(client, message):
             font = ImageFont.truetype(fonts, fnt_size)
         else:
             return await pros.edit(
-                f"><b>File font tidak valid atau tidak ditemukan.</b>"
+                "><b>File font tidak valid atau tidak ditemukan.</b>"
             )
     
         bbox = draw.textbbox((0, 0), name, font=font, stroke_width=strke)
@@ -114,11 +113,11 @@ async def logo_cmd(client, message):
     except Exception as e:
         LOGGER.error(f"Error saat memproses gambar atau font: {e}")
         return await pros.edit(
-            f"><b>Terjadi kesalahan pada saat memproses gambar atau font. Pastikan file gambar dan font valid.</b>"
+            "><b>Terjadi kesalahan pada saat memproses gambar atau font. Pastikan file gambar dan font valid.</b>"
         )
 
     await pros.edit(
-        f"><b>Sedang Proses unggah hasil ..</b>"
+        "><b>Sedang Proses unggah hasil ..</b>"
     )
 
     if os.path.exists(file_name):
