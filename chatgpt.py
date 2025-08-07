@@ -3,8 +3,7 @@ import config
 
 from pyrogram import filters
 from core import app
-from utils.functions import Tools #update_user_data 
-#from utils.decorators import Checklimit
+from utils.functions import Tools
 from logs import LOGGER
 
 
@@ -22,7 +21,6 @@ __HELP__ = """
 
 
 @app.on_message(filters.command(["ask"]) & ~config.BANNED_USERS)
-#@Checklimit("chatgpt")
 async def chatgpt_cmd(client, message):
     proses = await message.reply(">**Proses your request...**")
     if len(message.command) < 2:
@@ -36,7 +34,6 @@ async def chatgpt_cmd(client, message):
         if r.status_code != 200:
             return await proses.edit(">**Please try again later, maybe server is down.**")
         data = r.json()
-        #await update_user_data(client, user_id, "blackboxquery", True)
         return await proses.edit(data.get("data"))
     except Exception as e:
         LOGGER.error(traceback.format_exc())

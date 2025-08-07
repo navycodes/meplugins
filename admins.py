@@ -94,23 +94,6 @@ async def promote_cmd(client, message):
                         can_invite_users=True,
                         can_pin_messages=True,
                     )
-                # privileges = types.ChatPrivileges(
-                    # can_manage_chat=True,
-                    # can_delete_messages=True,
-                    # can_manage_video_chats=True,
-                    # can_restrict_members=True,
-                    # can_promote_members=command == "fullpromote",
-                    # can_change_info=command == "fullpromote",
-                    # can_post_messages=command == "fullpromote",
-                    # can_edit_messages=command == "fullpromote",
-                    # can_manage_topics=command == "fullpromote",
-                    # can_post_stories=command == "fullpromote",
-                    # can_edit_stories=command == "fullpromote",
-                    # can_delete_stories=command == "fullpromote",
-                    # can_invite_users=True,
-                    # can_pin_messages=True,
-                    # is_anonymous=False,
-                # )
                 try:
                     await client.promote_chat_member(
                         chat_id=message.chat.id,
@@ -403,28 +386,3 @@ async def pin_callback(client, callback):
     return await callback.answer(
         "Message Pinned Successfully!", show_alert=True
     )
-
-
-# @app.on_message(filters.command(["pin", "unpin"]) & ~config.BANNED_USERS)
-# @ONLY_GROUP
-# @ONLY_ADMIN
-# async def pin_cmd(_, message):
-#     if not message.reply_to_message:
-#         return await message.reply_text("><b>Please reply to message!</b>")
-#     r = message.reply_to_message
-#     if message.command[0][0] == "u":
-#         await r.unpin()
-#         return await message.reply_text(
-#             f"><b>Unpinned [this]({r.link}) message!</b>",
-#             disable_web_page_preview=True,
-#         )
-#     if message.chat.type == enums.ChatType.PRIVATE:
-#         await r.pin(disable_notification=False, both_sides=True)
-#     else:
-#         await r.pin(
-#             disable_notification=False,
-#         )
-#     return await message.reply(
-#         f"><b>Pinned [this]({r.link}) message!</b>",
-#         disable_web_page_preview=True,
-#     )
