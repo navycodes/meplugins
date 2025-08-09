@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+import os
 
 import config
 from pyrogram import enums, filters, errors
@@ -167,20 +168,29 @@ async def join_members(client, member):
         is_gbanned = await is_banned_user(user.id)
         if user.id == client.me.id:
             return
+        if os.path.exists("assets/owner_welcome.mp4"):
+            send_method = client.send_animation
+            file_arg = {"animation": "assets/owner_welcome.mp4"}
+        else:
+            send_method = client.send_photo
+            file_arg = {"photo": config.START_IMG_URL}
+
         if user.id in config.OWNER_ID:
-            await client.send_animation(
+            await send_method(
                 chat_id=member.chat.id,
-                animation="assets/owner_welcome.mp4",
+                **file_arg,
                 caption=">😳 My **Owner** has also joined the chat!",
             )
             return
+
         if user.id in SUDOERS:
-            await client.send_animation(
+            await send_method(
                 chat_id=member.chat.id,
-                animation="assets/owner_welcome.mp4",
+                **file_arg,
                 caption=">😳 **Sudoers** has also joined the chat!",
             )
             return
+
         if is_gbanned:
             await member.chat.ban_member(user.id)
             await client.send_message(
