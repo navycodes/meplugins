@@ -171,6 +171,9 @@ async def join_members(client, member):
         if os.path.exists("assets/owner_welcome.mp4"):
             send_method = client.send_animation
             file_arg = {"animation": "assets/owner_welcome.mp4"}
+        if getattr(config, "IS_JASA"):
+            send_method = client.send_photo
+            file_arg = {"photo": config.START_IMG_URL}
         else:
             send_method = client.send_photo
             file_arg = {"photo": config.START_IMG_URL}
