@@ -49,7 +49,11 @@ async def check_member(client, message):
     
     if force_subs:
         user_id = message.from_user.id
-        user_status = (await client.get_chat_member(chat_id, user_id)).status
+        try:
+            user_status = (await client.get_chat_member(chat_id, user_id)).status
+        except errors.ChatAdminRequired:
+            await dB.remove_var(chat_id, "IS_FORCESUB")
+            return await client.send_message(chat_id, f">**Saya bukan admin `{force_subs}` channel.\nJadikan saya admin disaluran itu.**")
         if user_status not in [enums.ChatMemberStatus.ADMINISTRATOR, enums.ChatMemberStatus.OWNER] and user_id not in SUDOERS:
             try:
                 await app.get_chat_member(force_subs, user_id)
@@ -78,7 +82,6 @@ Silahkan bergabung [disini]({invite_url}) dan tekan tombol **🙏🏻 Suarakan S
                     return await client.restrict_chat_member(chat_id, user_id, types.ChatPermissions())
                 except errors.ChatAdminRequired: 
                     return await sent_message.edit(">**Saya bukan admin disini..\nBeri saya izin larangan dan coba lagi.**")
-
             except errors.ChatAdminRequired:
                 return await client.send_message(chat_id, f">**Saya bukan admin `{force_subs}` channel.\nJadikan saya admin disaluran itu.**")
 
@@ -89,7 +92,7 @@ Silahkan bergabung [disini]({invite_url}) dan tekan tombol **🙏🏻 Suarakan S
 async def forsub_cmd(client, message):
     chat_id = message.chat.id
     if len(message.command) < 2:
-        return await message.reply(f">**Gunakan format /fsub @username untuk mengaktifkan wajib join ke saluran yang dituju, atau /fsub off untuk mematikan wajib join paksa.**")
+        return await message.reply(">**Gunakan format /fsub @username untuk mengaktifkan wajib join ke saluran yang dituju, atau /fsub off untuk mematikan wajib join paksa.**")
     input_str = message.command[1]
     is_on = await dB.get_var(chat_id, "IS_FORCESUB")
     if input_str.lower() == "off":
