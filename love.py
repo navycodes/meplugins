@@ -1,10 +1,8 @@
 import random
 
-import config
-from config import BANNED_USERS
-from core import app
+from pyrogram import filters
 
-from pyrogram import enums, filters
+from core import app
 
 
 __MODULE__ = "Love-Tools"
@@ -13,38 +11,44 @@ __HELP__ = """
     <b>Example:</b> • `/love [name1] [name2]`: Calculates The Percentage Of Love Between Two People,</blockquote>
 """
 
-
-async def get_random_message(love_percentage):
+def get_random_message(love_percentage):
     if love_percentage <= 30:
-        return await random.choice([
-            "Cinta sedang mengudara tetapi membutuhkan sedikit percikan..",
-            "Awal yang baik tetapi masih ada ruang untuk berkembang.",
-            "Itu hanyalah awal dari sesuatu yang indah."
-        ])
+        return random.choice(
+            [
+                "Love is in the air but needs a little spark.",
+                "A good start but there's room to grow.",
+                "It's just the beginning of something beautiful.",
+            ]
+        )
     elif love_percentage <= 70:
-        return await random.choice([
-            "Ada hubungan yang kuat di sana. Terus peliharalah itu.",
-            "Anda punya peluang bagus. Sedang dikerjakan.",
-            "Cinta sedang mekar, teruskan."
-        ])
+        return random.choice(
+            [
+                "A strong connection is there. Keep nurturing it.",
+                "You've got a good chance. Work on it.",
+                "Love is blossoming, keep going.",
+            ]
+        )
     else:
-        return await random.choice([
-            "Wow! Ini adalah pasangan yang dibuat di surga!",
-            "Pasangan sempurna! Hargai ikatan ini.",
-            "Ditakdirkan untuk bersama. Selamat!"
-        ])
-        
+        return random.choice(
+            [
+                "Wow! It's a match made in heaven!",
+                "Perfect match! Cherish this bond.",
+                "Destined to be together. Congratulations!",
+            ]
+        )
+
+
 @app.on_message(filters.command("love", prefixes="/"))
-async def love_command(client, message):
+def love_command(client, message):
     command, *args = message.text.split(" ")
     if len(args) >= 2:
         name1 = args[0].strip()
         name2 = args[1].strip()
-        
+
         love_percentage = random.randint(10, 100)
         love_message = get_random_message(love_percentage)
 
         response = f"{name1}💕 + {name2}💕 = {love_percentage}%\n\n{love_message}"
     else:
-        return await message.reply("Silakan masukkan dua nama setelah perintah /love.")
+        response = "Please enter two names after /love command."
     app.send_message(message.chat.id, response)
