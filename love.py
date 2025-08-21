@@ -10,8 +10,8 @@ from config import BANNED_USERS
 
 __MODULE__ = "Love-Tools"
 __HELP__ = """
-<code>★ /love</code> <b>[Provide Username Or Name, Minimum Two Names.]</b>
-    <b>Example:</b> • `/love [name1] [name2]`: Calculates The Percentage Of Love Between Two People
+<blockquote><code>★ /love</code> <b>[Provide Username Or Name, Minimum Two Names.]</b>
+    <b>Example:</b> • `/love [name1] [name2]`: Calculates The Percentage Of Love Between Two People,</blockquote>
 """
 
 
