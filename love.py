@@ -7,7 +7,7 @@ from core import app
 
 __MODULE__ = "Love-Tools"
 __HELP__ = """
-<blockquote><code>★ /love</code> <b>[Provide Username Or Name, Minimum Two Names.]</b>
+<blockquote><code>/love</code> <b>[Provide Username Or Name, Minimum Two Names.]</b>
     <b>Example:</b> • `/love [name1] [name2]`: Calculates The Percentage Of Love Between Two People,</blockquote>
 """
 
@@ -38,8 +38,8 @@ def get_random_message(love_percentage):
         )
 
 
-@app.on_message(filters.command("love", prefixes="/"))
-def love_cmd(client, message):
+@app.on_message(filters.command("love"))
+async def love_cmd(_, message):
     command, *args = message.text.split(" ")
     if len(args) >= 2:
         name1 = args[0].strip()
@@ -51,4 +51,5 @@ def love_cmd(client, message):
         response = f"{name1}💕 + {name2}💕 = {love_percentage}%\n\n{love_message}"
     else:
         response = "Please enter two names after /love command."
-    app.send_message(message.chat.id, response)
+    return await app.send_message(message.chat.id, response)
+    
