@@ -4,6 +4,7 @@ import asyncio
 from pyrogram import filters
 
 from core import app
+import config
 from config import BANNED_USERS
 
 
@@ -40,7 +41,7 @@ async def get_random_message(love_percentage):
             ]
         )
     
-@app.on_message(filters.command("love") & ~config.BANNED_USERS)
+@app.on_message(filters.command("love") & ~BANNED_USERS)
 async def love_command(client, message):
     command, *args = message.text.split(" ")
     if len(args) >= 2:
