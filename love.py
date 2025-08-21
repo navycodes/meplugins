@@ -1,8 +1,10 @@
 import random
 
-from pyrogram import filters
-
+import config
+from config import BANNED_USERS
 from core import app
+
+from pyrogram import enums, filters
 
 
 __MODULE__ = "Love-Tools"
@@ -14,19 +16,19 @@ __HELP__ = """
 
 async def get_random_message(love_percentage):
     if love_percentage <= 30:
-        return random.choice([
+        return await random.choice([
             "Cinta sedang mengudara tetapi membutuhkan sedikit percikan..",
             "Awal yang baik tetapi masih ada ruang untuk berkembang.",
             "Itu hanyalah awal dari sesuatu yang indah."
         ])
     elif love_percentage <= 70:
-        return random.choice([
+        return await random.choice([
             "Ada hubungan yang kuat di sana. Terus peliharalah itu.",
             "Anda punya peluang bagus. Sedang dikerjakan.",
             "Cinta sedang mekar, teruskan."
         ])
     else:
-        return random.choice([
+        return await random.choice([
             "Wow! Ini adalah pasangan yang dibuat di surga!",
             "Pasangan sempurna! Hargai ikatan ini.",
             "Ditakdirkan untuk bersama. Selamat!"
@@ -44,5 +46,5 @@ async def love_command(client, message):
 
         response = f"{name1}💕 + {name2}💕 = {love_percentage}%\n\n{love_message}"
     else:
-        response = "Silakan masukkan dua nama setelah perintah /love."
+        return await message.reply("Silakan masukkan dua nama setelah perintah /love.")
     app.send_message(message.chat.id, response)
