@@ -12,7 +12,7 @@ __HELP__ = """
 """
 
 
-def get_random_message(love_percentage):
+async def get_random_message(love_percentage):
     if love_percentage <= 30:
         return random.choice([
             "Cinta sedang mengudara tetapi membutuhkan sedikit percikan..",
@@ -33,7 +33,7 @@ def get_random_message(love_percentage):
         ])
         
 @app.on_message(filters.command("love", prefixes="/"))
-def love_command(client, message):
+async def love_command(client, message):
     command, *args = message.text.split(" ")
     if len(args) >= 2:
         name1 = args[0].strip()
