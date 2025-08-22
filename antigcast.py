@@ -104,7 +104,11 @@ async def add_approve(client, message):
     if ids in freedom:
         return await message.reply_text(">**Pengguna sudah disetujui.**")
     await dB.add_to_var(chat_id, "APPROVED_USERS", ids)
-    Deleter.WHITELIST_USER[chat_id].append(ids)
+    try:
+        Deleter.WHITELIST_USER[chat_id].append(ids)
+    except Exception:
+        Deleter.WHITELIST_USER[chat_id] = []
+        Deleter.WHITELIST_USER[chat_id].append(ids)
     return await message.reply(f">**Pengguna: {user.mention} telah disetujui tidak akan terkena antigcast.")
 
 
@@ -131,7 +135,10 @@ async def un_approve(client, message):
     if ids not in freedom:
         return await message.reply_text(">**Pengguna memang belum disetujui.**")
     await dB.remove_from_var(chat_id, "APPROVED_USERS", ids)
-    Deleter.WHITELIST_USER[chat_id].remove(ids)
+    try:
+        Deleter.WHITELIST_USER[chat_id].remove(ids)
+    except Exception:
+        pass
     return await message.reply(f">**Pengguna: {user.mention} telah dihapus dari daftar approved.**")
 
 @app.on_message(filters.command(["listwhite", "approved"]) & ~BANNED_USERS)
@@ -194,7 +201,11 @@ async def _(client, message):
     if ids in dicekah:
         return await message.reply_text(">**Pengguna sudah diblacklist.**")
     await dB.add_to_var(chat_id, "SILENT_USER", ids)
-    Deleter.BLACKLIST_USER[chat_id].append(ids)
+    try:
+        Deleter.BLACKLIST_USER[chat_id].append(ids)
+    except Exception:
+        Deleter.BLACKLIST_USER[chat_id] = []
+        Deleter.BLACKLIST_USER[chat_id].append(ids)
     msg = await message.reply(f">**Pengguna: {ids} ditambahkan ke blacklist.**")
     await asyncio.sleep(1)
     return await msg.delete()
@@ -221,7 +232,10 @@ async def _(client, message):
     if ids not in dicekah:
         return await message.reply_text("User not in blacklist.")
     await dB.remove_from_var(chat_id, "SILENT_USER", ids)
-    Deleter.BLACKLIST_USER[chat_id].remove(ids)
+    try:
+        Deleter.BLACKLIST_USER[chat_id].remove(ids)
+    except Exception:
+        pass
     msg = await message.reply(f">**Pengguna: {ids} dihapus ke blacklist.**")
     await asyncio.sleep(1)
     return await msg.delete()
