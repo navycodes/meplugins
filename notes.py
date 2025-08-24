@@ -71,7 +71,7 @@ async def getnote_cmd(client, message):
 
 
 
-@app.on_message(filters.incoming & filters.group & ~filters.bot & ~filters.via_bot & ~BANNED_USERS, group=14)
+#@app.on_message(filters.incoming & filters.group & ~filters.bot & ~filters.via_bot & ~BANNED_USERS, group=14)
 async def getnote_cmd(client, message):
     text = message.text
     if not text:
